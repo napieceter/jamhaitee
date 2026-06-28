@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>จำให้ที - Reminder Draft</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#top" aria-label="จำให้ที">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span class="brand-copy">
+          <strong class="brand-name">จำให้ที</strong>
+          <small class="brand-kicker">PRIVATE REMINDER</small>
+        </span>
+      </a>
+      <nav class="top-actions" aria-label="เมนูหลัก">
+        <a href="#membership">สมัครสมาชิก</a>
+        <a href="#owner">เจ้าของเว็บ</a>
+        <a href="#line-expert">ผู้เชี่ยวชาญ</a>
+        <a href="#pricing">แพ็กเกจ</a>
+        <a class="nav-button" href="#topics">เริ่มตั้งเตือน</a>
+      </nav>
+      <div class="language-switcher" aria-label="เลือกภาษา">
+        <button class="language-option is-active" type="button" data-lang="th">ไทย</button>
+        <button class="language-option" type="button" data-lang="en">EN</button>
+        <button class="language-option" type="button" data-lang="zh">中文</button>
+      </div>
+    </header>
+
+    <section class="hero" id="top">
+      <div class="hero-inner">
+        <p class="eyebrow">CARE REMINDER SERVICE</p>
+        <h1><span>บริการดูแล</span><span>การแจ้งเตือน</span><span>เรื่องสำคัญ</span></h1>
+        <p class="hero-copy">เราช่วยจัดระบบเรื่องที่ไม่ควรถูกลืม ตั้งแต่รถ สุขภาพ เอกสาร บ้าน ไปจนถึงธุรกิจ ด้วยการเตือนที่ตรงเวลา สุภาพ และคำนึงถึงความปลอดภัยของข้อมูลลูกค้าเป็นอันดับแรก</p>
+        <div class="hero-summary">
+          <span>ดูแลเป็นรายบุคคล</span>
+          <span>SMS / LINE พร้อมต่อยอด</span>
+          <span>รายงานภาพรวมผู้ดูแล</span>
+          <span>ข้อมูลลูกค้าปลอดภัยก่อน</span>
+        </div>
+        <a href="#profile" class="primary-link">ดูแนวทางบริการ</a>
+      </div>
+
+      <div class="hero-visual" aria-label="เรดาร์ตลาดจากแหล่งข้อมูลสำหรับสิ่งที่คนอยากให้ช่วยจำ">
+        <div class="mission-topline">
+          <span>เรดาร์ตลาดจากข้อมูล</span>
+          <strong>อ้างอิงแหล่งจริง</strong>
+        </div>
+        <div class="orbit-panel">
+          <div class="radar-core">
+            <span class="orbit-ring ring-one"></span>
+            <span class="orbit-ring ring-two"></span>
+            <span class="orbit-ring ring-three"></span>
+            <div class="radial-meter">
+              <strong>50%</strong>
+              <span>ยาต่อเนื่อง</span>
+            </div>
+          </div>
+          <div class="orbital-kpi kpi-one">
+            <strong>สัญญาณหลัก</strong>
+            <span>สุขภาพ/นัดหมาย</span>
+          </div>
+          <div class="orbital-kpi kpi-two">
+            <strong>LINE 54M</strong>
+            <span>ช่องทางไทย</span>
+          </div>
+        </div>
+        <div class="mission-grid">
+          <div>
+            <span>หลักฐาน 1</span>
+            <strong>ยา/นัดหมาย</strong>
+          </div>
+          <div>
+            <span>หลักฐาน 2</span>
+            <strong>รถ/ยาง/ของเหลว</strong>
+          </div>
+          <div>
+            <span>หลักฐาน 3</span>
+            <strong>บิล/เอกสารต่ออายุ</strong>
+          </div>
+        </div>
+        <div class="signal-lines" aria-hidden="true">
+          <span style="--w: 100%"></span>
+          <span style="--w: 78%"></span>
+          <span style="--w: 58%"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="trust-strip" aria-label="Customer data protection">
+      <div>
+        <strong>เราออกแบบบริการให้ห่วงใยลูกค้า และระวังข้อมูลตั้งแต่วันแรก</strong>
+        <span>เวอร์ชันร่างนี้ยังไม่เก็บข้อมูลบน server, ยังไม่ส่ง SMS จริง, และยังไม่ต่อระบบชำระเงินจริง</span>
+      </div>
+      <span class="safe-pill">Draft safe mode</span>
+    </section>
+
+    <section class="evidence-section" id="evidence">
+      <div class="section-head">
+        <p class="eyebrow">MARKET EVIDENCE</p>
+        <h2>ข้อมูลที่ใช้วางตลาดให้ตรงเป้า</h2>
+      </div>
+      <div class="evidence-grid">
+        <article class="evidence-card priority">
+          <span>01</span>
+          <h3>สุขภาพ ยาต่อเนื่อง และนัดหมาย</h3>
+          <p>WHO/CDC ชี้ว่าการใช้ยาตามแผนรักษายังเป็นปัญหาใหญ่ของโรคเรื้อรัง และงาน review พบว่าระบบ reminder ช่วยลดการไม่มาตามนัดได้</p>
+          <a href="https://www.cdc.gov/mmwr/volumes/66/wr/mm6645a2.htm" target="_blank" rel="noopener noreferrer">CDC / WHO signal</a>
+        </article>
+        <article class="evidence-card">
+          <span>02</span>
+          <h3>รถ ยาง ของเหลว และแบตเตอรี่</h3>
+          <p>NHTSA แนะนำตรวจยางรายเดือน และข้อมูล Car Care พบปัญหาซ้ำในน้ำมัน/ของเหลว ไส้กรอง สายพาน ท่อ และแบตเตอรี่</p>
+          <a href="https://www.nhtsa.gov/vehicle-safety/tires" target="_blank" rel="noopener noreferrer">NHTSA / Car Care</a>
+        </article>
+        <article class="evidence-card">
+          <span>03</span>
+          <h3>บิล ค่างวด และเอกสารหมดอายุ</h3>
+          <p>กลุ่มนี้มีวันครบกำหนดชัดเจน เหมาะกับ reminder แบบเตือนล่วงหน้า เตือนซ้ำ และให้เลื่อนวันได้โดยไม่ต้องเก็บข้อมูลละเอียดเกินจำเป็น</p>
+          <a href="https://www.dovepress.com/appointment-reminder-systems-are-effective-but-not-optimal-results-of--peer-reviewed-fulltext-article-PPA" target="_blank" rel="noopener noreferrer">Reminder design</a>
+        </article>
+        <article class="evidence-card">
+          <span>04</span>
+          <h3>LINE-first สำหรับตลาดไทย</h3>
+          <p>LY Corporation รายงานว่าไทยมีผู้ใช้ LINE 54 ล้านคนในปี 2024 จึงเหมาะกับ rich menu, LIFF และ AI ผู้เชี่ยวชาญสำหรับทดลองตลาด</p>
+          <a href="https://www.lycorp.co.jp/en/story/20250530/lineconference.html" target="_blank" rel="noopener noreferrer">LINE Thailand signal</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="profile-section" id="profile">
+      <div class="profile-lead">
+        <p class="eyebrow">WHO WE CARE FOR</p>
+        <h2><span>บริการสำหรับคนที่</span><span>มีเรื่องสำคัญต้องดูแล</span><span>แต่ไม่อยากพลาดเวลา</span></h2>
+        <p>เราช่วยเปลี่ยนรายละเอียดเล็ก ๆ ในชีวิตประจำวันให้เป็นระบบดูแลที่ชัดเจน ตั้งแต่วันถ่ายน้ำมันเครื่อง วันนัดหมอ วันหมดอายุเอกสาร ไปจนถึงรอบดูแลบ้าน เพื่อให้ลูกค้ารู้สึกอุ่นใจว่ามีคนช่วยจำอย่างเป็นระบบ</p>
+      </div>
+
+      <div class="profile-grid">
+        <article class="profile-card dark">
+          <p class="eyebrow small">SERVICE PROMISE</p>
+          <h3>วางแผนแจ้งเตือนอย่างใส่ใจ</h3>
+          <p>ลูกค้าเลือกเรื่องที่ต้องการดูแล กรอกเฉพาะข้อมูลที่จำเป็น แล้วระบบช่วยจัดรอบเตือนให้เข้าใจง่าย ไม่กดดัน และไม่รบกวนเกินจำเป็น</p>
+        </article>
+        <article class="profile-card">
+          <p class="eyebrow small">MEMBER CARE</p>
+          <h3>บัญชีที่ออกแบบเพื่อความสบายใจ</h3>
+          <p>รองรับชื่อ เบอร์มือถือ LINE ID และช่องทางแจ้งเตือนที่ลูกค้าเลือก พร้อมหลักคิดเก็บข้อมูลเท่าที่จำเป็น</p>
+        </article>
+        <article class="profile-card">
+          <p class="eyebrow small">BUSINESS READY</p>
+          <h3>ต่อยอดเป็นบริการรายเดือนได้</h3>
+          <p>เตรียมแนวทางชำระเงินและแดชบอร์ดผู้ดูแลไว้เป็นร่าง ก่อนต่อระบบบัตร ธนาคาร หรือแพลตฟอร์มจริงอย่างปลอดภัย</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="line-section" id="line-expert">
+      <div class="section-head">
+        <p class="eyebrow">LINE OA PILOT</p>
+        <h2>ทดลอง LINE เมนูการตลาด + AI ผู้เชี่ยวชาญดูแล</h2>
+      </div>
+      <div class="line-grid">
+        <article class="line-panel line-phone">
+          <div class="line-header">
+            <strong>จำให้ที</strong>
+            <span>Official Account draft</span>
+          </div>
+          <div class="chat-bubble expert expert-intro">สวัสดีค่ะ เลือกเรื่องที่อยากให้ช่วยดูแล หรือถามผู้เชี่ยวชาญลินได้เลย</div>
+          <div class="chat-bubble user sample-user">อยากตั้งเตือนต่อภาษีรถ</div>
+          <div class="chat-bubble expert expert-answer">ได้ค่ะ ขอรุ่นรถ วันหมดอายุ และช่องทางแจ้งเตือน ผู้เชี่ยวชาญจะช่วยจัดรอบเตือนให้</div>
+          <div class="rich-menu-preview">
+            <button type="button">ตั้งเตือน</button>
+            <button type="button">เช็กสถานะ</button>
+            <button type="button">ถามผู้เชี่ยวชาญ</button>
+            <button type="button">เลื่อนนัด</button>
+            <button type="button">แพ็กเกจ</button>
+            <button type="button">ติดต่อทีมงาน</button>
+          </div>
+        </article>
+        <article class="line-panel">
+          <p class="eyebrow small">SAFE PILOT ARCHITECTURE</p>
+          <h3>เริ่มจาก LINE OA ที่เป็นหน้าร้านก่อน แล้วค่อยต่อผู้เชี่ยวชาญ AI จริง</h3>
+          <ul class="line-checklist">
+            <li>Rich menu: ปุ่มตั้งเตือน เช็กสถานะ ถามผู้เชี่ยวชาญ เลื่อนนัด แพ็กเกจ ติดต่อทีมงาน</li>
+            <li>LIFF: เปิดฟอร์มเว็บใน LINE โดยไม่ต้องออกจากแชท</li>
+            <li>ผู้เชี่ยวชาญ AI: ตอบคำถามทั่วไป ช่วยกรอกข้อมูล และส่งต่อคนจริงเมื่อเสี่ยงหรือซับซ้อน</li>
+            <li>Safety: ไม่ส่งข้อมูลสุขภาพ/เบอร์/LINE ID ไปหา AI จนกว่าจะมี consent และนโยบายข้อมูลจริง</li>
+          </ul>
+          <div class="source-stack">
+            <a href="https://developers.line.biz/en/docs/messaging-api/rich-menus-overview/" target="_blank" rel="noopener noreferrer">LINE Rich Menu</a>
+            <a href="https://developers.line.biz/en/docs/liff/overview/" target="_blank" rel="noopener noreferrer">LINE LIFF</a>
+            <a href="https://developers.line.biz/en/docs/messaging-api/sending-messages/" target="_blank" rel="noopener noreferrer">Messaging API</a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="pricing-section" id="pricing">
+      <div class="section-head">
+        <p class="eyebrow">PRICING DRAFT</p>
+        <h2>ทดลองก่อนจ่ายจริง แล้วค่อยเริ่มแพ็กเกจรายเดือน</h2>
+        <p class="pricing-intro">บริการนี้วางให้มี 2 แกนหลัก: แจ้งเตือนเรื่องสำคัญ และบันทึกรายรับรายจ่ายพร้อมสรุปพฤติกรรมการใช้เงิน โดยเริ่มจาก LINE เป็นช่องทางหลัก และแยก SMS เป็นเครดิตเสริมเพื่อคุมต้นทุนให้ยุติธรรม</p>
+      </div>
+
+      <div class="pricing-grid">
+        <article class="pricing-card">
+          <span class="plan-tag">ทดลองใช้ฟรี</span>
+          <h3>ทดลองใช้</h3>
+          <p class="price-line"><strong>ฟรี 30 วัน</strong><span>ไม่ต้องผูกบัตร</span></p>
+          <ul>
+            <li>ตั้งเตือนเรื่องสำคัญแบบพื้นฐาน</li>
+            <li>บันทึกรายรับรายจ่ายแบบร่าง</li>
+            <li>ดูสรุปรายวันและรายเดือน</li>
+          </ul>
+          <a href="#membership" class="plan-button">เริ่มทดลอง</a>
+        </article>
+
+        <article class="pricing-card featured">
+          <span class="plan-tag">แนะนำเริ่มต้น</span>
+          <h3>เริ่มต้น</h3>
+          <p class="price-line"><strong>49 บาท/เดือน</strong><span>เดือนแรกหลังทดลอง 29 บาท</span></p>
+          <ul>
+            <li>แจ้งเตือนผ่าน LINE ตามรอบเช้า กลางวัน เย็น</li>
+            <li>กดรับทราบแล้วหยุดเตือนซ้ำในวันนั้น</li>
+            <li>บันทึกรายรับรายจ่ายและดูกราฟเปรียบเทียบ</li>
+          </ul>
+          <a href="#topics" class="plan-button">เลือกแพ็กนี้</a>
+        </article>
+
+        <article class="pricing-card">
+          <span class="plan-tag">ดูแลครบ</span>
+          <h3>Care Plus</h3>
+          <p class="price-line"><strong>99 บาท/เดือน</strong><span>สำหรับคนที่อยากให้ช่วยดูละเอียดขึ้น</span></p>
+          <ul>
+            <li>แนบบิลหรือรูปใบเสร็จเป็นหลักฐานในอนาคต</li>
+            <li>สรุปค่าใช้จ่ายรายวัน รายเดือน และหมวดที่ใช้เยอะ</li>
+            <li>คำแนะนำงบประมาณว่าไม่ควรใช้เกินเท่าไหร่</li>
+          </ul>
+          <a href="#line-expert" class="plan-button">ดูระบบผู้เชี่ยวชาญ</a>
+        </article>
+
+        <article class="pricing-card addon">
+          <span class="plan-tag">เครดิตเสริม</span>
+          <h3>SMS Add-on</h3>
+          <p class="price-line"><strong>เติมเครดิต</strong><span>คิดตามจำนวนข้อความจริง</span></p>
+          <ul>
+            <li>เหมาะกับลูกค้าที่ไม่ได้ใช้ LINE</li>
+            <li>แนะนำเริ่มแบบเติมเครดิตก่อนเปิดแพ็ก SMS เหมา</li>
+            <li>ราคา SMS ต้องล็อกกับผู้ให้บริการก่อนเปิดขายจริง</li>
+          </ul>
+          <a href="#payment" class="plan-button">ดูช่องทางจ่าย</a>
+        </article>
+      </div>
+
+      <div class="pricing-note">
+        <strong>ข้อเสนอเปิดตัวที่ลินแนะนำ:</strong>
+        <span>ทดลองใช้ฟรี 30 วัน จากนั้นเดือนแรก 29 บาท แล้วค่อยเป็น 49 บาท/เดือน หากลูกค้าต้องใช้ SMS ให้เติมเครดิตแยก เพื่อไม่ให้แพ็กหลักแพงเกินไป</span>
+      </div>
+    </section>
+
+    <section class="membership-section" id="membership">
+      <div class="section-head">
+        <p class="eyebrow">MEMBER ACCESS</p>
+        <h2>สมัครสมาชิกและเลือกช่องทางแจ้งเตือน</h2>
+      </div>
+
+      <div class="member-grid">
+        <form class="panel member-card" id="registerForm">
+          <div class="panel-heading">
+            <span class="step">1</span>
+            <div>
+              <p class="eyebrow small">REGISTER</p>
+              <h3>สมัครสมาชิก</h3>
+            </div>
+          </div>
+          <div class="field-grid">
+            <label>
+              ชื่อสมาชิก
+              <input id="memberName" type="text" autocomplete="name" placeholder="ชื่อที่ต้องการให้ระบบเรียก">
+            </label>
+            <label>
+              เบอร์มือถือ
+              <input id="memberPhone" type="tel" autocomplete="tel" placeholder="ใช้รับ SMS หรือ OTP ในอนาคต">
+            </label>
+          </div>
+          <div class="field-grid">
+            <label>
+              LINE ID
+              <input id="memberLine" type="text" placeholder="ใช้สำหรับผูก LINE แจ้งเตือน">
+            </label>
+            <label>
+              ช่องทางหลัก
+              <select id="memberChannel">
+                <option>SMS</option>
+                <option>LINE</option>
+                <option>SMS + LINE</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            รหัสผ่านหรือ OTP
+            <input id="memberPass" type="password" placeholder="mockup เท่านั้น ยังไม่บันทึกจริง">
+          </label>
+          <div class="consent-card">
+            <label class="checkbox-row">
+              <input id="memberConsent" type="checkbox">
+              <span>ยินยอมให้ใช้ข้อมูลนี้เพื่อสมัครสมาชิกและส่งแจ้งเตือนเท่านั้น</span>
+            </label>
+          </div>
+          <button type="submit" class="primary-button full">สร้างบัญชีร่าง</button>
+          <p class="form-note" id="memberStatus">ยังไม่มีข้อมูลสมาชิกถูกบันทึกจริง</p>
+        </form>
+
+        <form class="panel member-card compact-card" id="loginForm">
+          <div class="panel-heading">
+            <span class="step">2</span>
+            <div>
+              <p class="eyebrow small">LOGIN</p>
+              <h3>เข้าสู่ระบบ</h3>
+            </div>
+          </div>
+          <label>
+            เบอร์มือถือหรือ LINE ID
+            <input id="loginId" type="text" placeholder="ใช้สำหรับเข้าสู่ระบบ">
+          </label>
+          <label>
+            รหัสผ่านหรือ OTP
+            <input id="loginPass" type="password" placeholder="mockup เท่านั้น">
+          </label>
+          <button type="submit" class="secondary-button full">เข้าสู่ระบบแบบร่าง</button>
+          <p class="form-note" id="loginStatus">ระบบจริงควรใช้ OTP/2FA และเข้ารหัสข้อมูล</p>
+        </form>
+      </div>
+    </section>
+
+    <section class="owner-section" id="owner">
+      <div class="section-head">
+        <p class="eyebrow">OWNER DASHBOARD</p>
+        <h2>มุมเจ้าของเว็บ</h2>
+      </div>
+
+      <form class="panel admin-gate" id="adminLoginForm">
+        <div>
+          <p class="eyebrow small">ADMIN ACCESS</p>
+          <h3>ล็อกอินก่อนดูข้อมูลผู้ใช้บริการ</h3>
+          <p class="muted">แดชบอร์ดนี้แสดงเฉพาะข้อมูลรวม ไม่แสดงเบอร์มือถือ LINE ID หรือข้อมูลส่วนตัวรายคนในเวอร์ชันร่าง</p>
+        </div>
+        <div class="admin-login-grid">
+          <label>
+            บัญชีผู้ดูแล
+            <input id="adminUser" type="text" autocomplete="username" placeholder="เช่น owner@jamhaitee">
+          </label>
+          <label>
+            รหัสผ่านหรือ OTP
+            <input id="adminPass" type="password" autocomplete="current-password" placeholder="mockup เท่านั้น">
+          </label>
+          <button type="submit" class="primary-button">เข้าสู่แดชบอร์ด</button>
+        </div>
+        <p class="form-note" id="adminGateStatus">ยังไม่เข้าสู่ระบบผู้ดูแล</p>
+      </form>
+
+      <div class="owner-grid is-hidden" id="adminDashboard" aria-live="polite">
+        <article class="panel owner-card">
+          <p class="muted">ผู้ใช้บริการทั้งหมด</p>
+          <strong id="exactUserCount">487</strong>
+          <span>เห็นเฉพาะเจ้าของเว็บ</span>
+          <label class="owner-slider">
+            ปรับยอดจำลอง
+            <input id="userCountInput" type="range" min="0" max="900" value="487">
+          </label>
+        </article>
+        <article class="panel owner-card public-count">
+          <p class="muted">ตัวเลขที่แสดงต่อสาธารณะ</p>
+          <strong id="publicUserCount">ยังไม่แสดง</strong>
+          <span>กติกา: แสดง `500+` เมื่อยอดถึง 500 ขึ้นไป</span>
+        </article>
+        <article class="panel owner-card">
+          <p class="muted">สถานะระบบ</p>
+          <ul class="status-list">
+            <li>Admin: ต้องล็อกอินก่อนเห็นข้อมูลรวม</li>
+            <li>สมาชิก: mockup เท่านั้น</li>
+            <li>SMS/LINE: ยังไม่ส่งจริง</li>
+            <li>Payment: ยังไม่ตัดเงินจริง</li>
+            <li>ข้อมูลลูกค้า: แสดงเฉพาะภาพรวม ไม่โชว์ข้อมูลส่วนตัว</li>
+          </ul>
+        </article>
+        <article class="panel owner-card chart-card">
+          <div>
+            <p class="muted">สถิติเรื่องที่มักลืม</p>
+            <h3>หมวดที่คนอยากให้ช่วยเตือนมากสุด</h3>
+          </div>
+          <div class="chart-list" id="serviceChart"></div>
+        </article>
+        <article class="panel owner-card chart-card">
+          <div>
+            <p class="muted">พฤติกรรมการแจ้งเตือน</p>
+            <h3>ฟังก์ชันที่ช่วยให้ไม่พลาดซ้ำ</h3>
+          </div>
+          <div class="chart-list" id="requestChart"></div>
+        </article>
+        <article class="panel owner-card admin-note-card">
+          <p class="muted">มุมตัดสินใจของเจ้าของเว็บ</p>
+          <strong>ดูภาพรวมก่อนเปิดข้อมูลจริง</strong>
+          <span>ระบบจริงควรใช้สิทธิ์ผู้ดูแล, 2FA, audit log, เข้ารหัสฐานข้อมูล และแยกข้อมูลส่วนตัวออกจากสถิติรวม</span>
+          <button class="secondary-button" id="adminLogout" type="button">ออกจากแดชบอร์ด</button>
+        </article>
+      </div>
+    </section>
+
+    <section class="payment-section" id="payment">
+      <div class="section-head">
+        <p class="eyebrow">PAYMENT OPTIONS</p>
+        <h2>ช่องทางเก็บเงินที่เตรียมไว้เป็นร่าง</h2>
+      </div>
+
+      <div class="payment-grid" id="paymentGrid">
+        <button class="payment-card is-active" type="button" data-payment="card">
+          <strong>บัตรเครดิต/เดบิต</strong>
+          <span>ใช้ gateway ที่ไม่เก็บเลขบัตรไว้ในระบบเรา</span>
+        </button>
+        <button class="payment-card" type="button" data-payment="bank">
+          <strong>เติมเงินผ่านแอปธนาคาร</strong>
+          <span>เหมาะกับ QR / PromptPay / โอนเข้าบัญชีธุรกิจ</span>
+        </button>
+        <button class="payment-card" type="button" data-payment="wallet">
+          <strong>แพลตฟอร์ม/วอลเล็ต</strong>
+          <span>ต่อยอดกับช่องทางที่ลูกค้าไทยคุ้นเคย</span>
+        </button>
+        <button class="payment-card" type="button" data-payment="prepaid">
+          <strong>ระบบเติมเครดิต</strong>
+          <span>ลูกค้าเติมเงินไว้ แล้วหักตาม SMS หรือแพ็กเกจ</span>
+        </button>
+      </div>
+      <p class="payment-note" id="paymentNote">ช่องทางนี้เป็น mockup เท่านั้น ระบบจริงต้องผ่าน payment gateway ที่ปลอดภัยและทำบัญชีได้</p>
+    </section>
+
+    <section class="process-section">
+      <div class="section-head">
+        <p class="eyebrow">HOW IT WORKS</p>
+        <h2>ขั้นตอนใช้งาน</h2>
+      </div>
+      <div class="process-grid">
+        <div><strong>01</strong><span>สมัครสมาชิกและเลือกช่องทางแจ้งเตือน</span></div>
+        <div><strong>02</strong><span>เลือกรายการที่ต้องการให้ช่วยจำ</span></div>
+        <div><strong>03</strong><span>กรอกหรือติ๊กเฉพาะข้อมูลที่เกี่ยวข้อง</span></div>
+        <div><strong>04</strong><span>ระบบสร้างแผนเตือน ก่อนต่อ SMS/LINE จริง</span></div>
+      </div>
+    </section>
+
+    <section class="topics-section" id="topics">
+      <div class="section-head">
+        <p class="eyebrow">CHOOSE A REMINDER</p>
+        <h2>อยากให้ช่วยจำเรื่องไหน</h2>
+      </div>
+
+      <div class="topic-grid" id="topicGrid">
+        <button class="topic-card" type="button" data-category="health">
+          <span>สุขภาพ/ยา</span>
+          <small>กินยา นัดหมอ ติดตามอาการ ตรวจสุขภาพ</small>
+        </button>
+        <button class="topic-card" type="button" data-category="car">
+          <span>รถยนต์</span>
+          <small>บำรุงรักษา ของเหลว แบตเตอรี่ ภาษี ประกัน</small>
+        </button>
+        <button class="topic-card" type="button" data-category="document">
+          <span>บิล/เอกสาร</span>
+          <small>ค่างวด ประกัน บัตร ใบอนุญาต สัญญา วันหมดอายุ</small>
+        </button>
+        <button class="topic-card" type="button" data-category="home">
+          <span>บ้าน/คอนโด</span>
+          <small>ล้างแอร์ ไส้กรอง ค่าส่วนกลาง งานซ่อม</small>
+        </button>
+        <button class="topic-card" type="button" data-category="business">
+          <span>ธุรกิจ</span>
+          <small>อุปกรณ์ รอบจ่ายเงิน ต่อสัญญา ติดตามลูกค้า</small>
+        </button>
+      </div>
+    </section>
+
+    <section class="form-shell is-hidden" id="formShell" aria-live="polite">
+      <form id="reminderForm" class="panel questionnaire">
+        <input id="category" type="hidden" value="">
+
+        <div class="panel-heading">
+          <span class="step">1</span>
+          <div>
+            <p class="eyebrow small">QUESTIONNAIRE</p>
+            <h2 id="questionnaireTitle">เลือกเรื่องที่ต้องการก่อน</h2>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <label>
+            ชื่อผู้รับแจ้งเตือน
+            <input id="customerName" type="text" autocomplete="name" placeholder="ชื่อที่ต้องการให้ระบบเรียก">
+            <small>ใช้สำหรับขึ้นต้นข้อความแจ้งเตือน</small>
+          </label>
+          <label>
+            เบอร์โทร
+            <input id="phone" type="tel" autocomplete="tel" placeholder="ใช้รับ SMS ในอนาคต">
+            <small>เวอร์ชันร่างยังไม่ส่ง SMS จริง</small>
+          </label>
+        </div>
+
+        <div class="field-grid">
+          <label>
+            LINE ID
+            <input id="lineId" type="text" autocomplete="off" placeholder="เช่น deathlessomg">
+            <small>ใช้ระบุปลายทาง LINE สำหรับร่างแจ้งเตือนนี้ ยังไม่ส่งจริง</small>
+          </label>
+          <label>
+            วันที่แจ้งเตือน
+            <input id="notifyDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+            <small>ถ้าเว้นไว้ ระบบจะใช้วันนี้</small>
+          </label>
+        </div>
+
+        <label>
+          เรื่องที่ต้องการเตือน
+          <input id="reminderTitle" type="text" placeholder="เช่น แจ้งเตือนกินยา">
+          <small>หัวข้อนี้จะแสดงบนหน้าบัตรแจ้งเตือนให้ตรวจสอบก่อนใช้งานจริง</small>
+        </label>
+
+        <div class="field-grid">
+          <label>
+            ช่องทางแจ้งเตือน
+            <select id="channel">
+              <option>SMS</option>
+              <option>LINE</option>
+              <option>SMS + LINE</option>
+            </select>
+            <small>เลือกช่องทางหลักที่อยากให้ระบบเตือน</small>
+          </label>
+          <label>
+            เวลาที่สะดวกรับเตือน
+            <input id="notifyTime" type="time" value="09:00">
+            <small>แนะนำช่วงที่เห็นข้อความง่าย</small>
+          </label>
+        </div>
+
+        <div class="category-fields" id="vehicleFields">
+          <div class="field-grid">
+            <label>
+              ยี่ห้อ/รุ่นรถ
+              <input id="vehicleModel" type="text" placeholder="เช่น Toyota Altis">
+              <small>ช่วยให้คำเตือนอ่านรู้เรื่องขึ้น</small>
+            </label>
+            <label>
+              ปีรถ
+              <input id="vehicleYear" type="number" min="1970" max="2035" placeholder="เช่น 2020">
+              <small>ใช้ประเมินอายุรถคร่าว ๆ</small>
+            </label>
+          </div>
+          <div class="field-grid">
+            <label>
+              เลขไมล์ปัจจุบัน
+              <input id="mileage" type="number" min="0" placeholder="เช่น 85000">
+              <small>ช่วยแนะนำรอบเปลี่ยนตามกิโล</small>
+            </label>
+            <label>
+              ใช้งานรถ
+              <select id="usageLevel">
+                <option value="normal">ปกติ</option>
+                <option value="light">น้อย</option>
+                <option value="heavy">หนัก/ทุกวัน</option>
+              </select>
+              <small>รถใช้งานหนักควรเตือนถี่ขึ้น</small>
+            </label>
+          </div>
+          <div class="field-grid">
+            <label>
+              เช็กล่าสุด
+              <input id="lastService" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+              <small>ถ้าไม่แน่ใจเว้นไว้ได้</small>
+            </label>
+            <label>
+              ถ่ายน้ำมันเครื่องล่าสุด
+              <input id="lastOilChange" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+              <small>ใช้คำนวณรอบเตือนครั้งถัดไป</small>
+            </label>
+          </div>
+        </div>
+
+        <div class="category-fields" id="dynamicFields"></div>
+        <div class="quick-checks" id="quickChecks"></div>
+
+        <label>
+          รายละเอียดเพิ่มเติม
+          <textarea id="symptoms" rows="4" placeholder="เล่าอาการ สิ่งที่กังวล หรือสิ่งที่อยากให้เตือน"></textarea>
+          <small id="symptomHint">กรอกเท่าที่จำเป็น ไม่ต้องใส่ข้อมูลอ่อนไหวเกินจำเป็น</small>
+        </label>
+
+        <div class="field-grid">
+          <label>
+            ความถี่ของปัญหา
+            <select id="frequency">
+              <option value="once">ครั้งเดียว</option>
+              <option value="sometimes">บางครั้ง</option>
+              <option value="often">บ่อย</option>
+              <option value="always">ทุกครั้ง</option>
+            </select>
+            <small>ช่วยประเมินว่าควรเตือนเร็วแค่ไหน</small>
+          </label>
+          <label>
+            ระดับความสำคัญ
+            <input id="severity" type="range" min="1" max="5" value="3">
+            <span id="severityValue" class="range-value">3</span>
+          </label>
+        </div>
+
+        <div class="consent-card">
+          <label class="checkbox-row">
+            <input id="consent" type="checkbox">
+            <span>ยินยอมให้ใช้ข้อมูลนี้เพื่อสร้างรายการแจ้งเตือนเท่านั้น</span>
+          </label>
+        </div>
+
+        <button type="submit" class="primary-button full">สร้างแผนแจ้งเตือน</button>
+      </form>
+
+      <section class="panel result-panel is-hidden" id="resultPanel">
+        <div class="panel-heading">
+          <span class="step">2</span>
+          <div>
+            <p class="eyebrow small">REMINDER PLAN</p>
+            <h2>แผนแจ้งเตือนร่าง</h2>
+          </div>
+        </div>
+
+        <div class="risk-card">
+          <div>
+            <p class="muted">ผลประเมินเบื้องต้น</p>
+            <strong id="riskLevel">รอข้อมูล</strong>
+          </div>
+          <span id="riskBadge" class="badge neutral">Draft</span>
+        </div>
+
+        <div class="alert-summary-card" id="alertSummary" aria-live="polite"></div>
+        <div class="timeline" id="timeline"></div>
+
+        <div class="notification-card">
+          <div>
+            <p class="eyebrow small">DAILY REMINDER</p>
+            <h3>รอบแจ้งเตือนวันนี้</h3>
+            <p class="muted">ระบบจะเตือน 3 เวลา หากกดรับทราบแล้วจะไม่แจ้งเตือนซ้ำในวันนั้น</p>
+          </div>
+          <div class="notify-slots" id="notificationSlots"></div>
+          <div class="button-row">
+            <button id="acknowledgeToday" type="button" class="primary-button">รับทราบแล้ว</button>
+            <button id="resetAck" type="button" class="secondary-button">ยกเลิกรับทราบ</button>
+          </div>
+          <div class="reschedule-box">
+            <div class="field-grid">
+              <label>
+                เลื่อนเป็นวันที่
+                <input id="rescheduleDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+              </label>
+              <label>
+                เวลาใหม่
+                <input id="rescheduleTime" type="time" value="09:00">
+              </label>
+            </div>
+            <button id="rescheduleButton" type="button" class="secondary-button full">เลื่อนวัน/เวลาแจ้งเตือน</button>
+          </div>
+          <p class="form-note" id="notificationStatus">ยังไม่ได้รับทราบหรือเลื่อนเวลา</p>
+        </div>
+
+        <div class="message-card">
+          <p class="muted">ข้อความตัวอย่าง</p>
+          <textarea id="messagePreview" rows="7" readonly></textarea>
+          <div class="button-row">
+            <button id="copyMessage" type="button" class="secondary-button">คัดลอก</button>
+            <button id="simulateSend" type="button" class="primary-button">บันทึกทดสอบ</button>
+          </div>
+        </div>
+
+        <div class="log-box">
+          <h3>Log</h3>
+          <ul id="sendLog"></ul>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
