@@ -544,22 +544,53 @@
         <div class="category-fields" id="vehicleFields">
           <div class="field-grid">
             <label>
-              ยี่ห้อ/รุ่นรถ
-              <input id="vehicleModel" type="text" placeholder="เช่น Toyota Altis">
-              <small>ช่วยให้คำเตือนอ่านรู้เรื่องขึ้น</small>
+              ยี่ห้อรถ
+              <select id="vehicleBrand">
+                <option value="">เลือกยี่ห้อรถ</option>
+              </select>
+              <small>เลือกยี่ห้อก่อน ระบบจะแนะนำรุ่นที่พบบ่อยให้</small>
             </label>
+            <label>
+              รุ่นรถ
+              <input id="vehicleModel" type="text" list="vehicleModelList" placeholder="เช่น Corolla Altis">
+              <datalist id="vehicleModelList"></datalist>
+              <small id="vehicleModelHint">ค้นหารุ่นจากรายการ หรือพิมพ์เองถ้าไม่พบ</small>
+            </label>
+          </div>
+          <div class="vehicle-helper" id="vehicleHelper">
+            <strong>ถ้าไม่มีรุ่นในรายการ</strong>
+            <span>พิมพ์ชื่อรุ่นเท่าที่ทราบได้เลย ทีมงานจะค้นรุ่นให้ก่อนจัดรอบแจ้งเตือนจริง</span>
+          </div>
+          <div class="vehicle-smart-panel" id="vehicleSmartPanel">
+            <div class="smart-panel-head">
+              <span>เลือกงานรถแบบเร็ว</span>
+              <small>แตะหนึ่งครั้งให้ระบบเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้เอง</small>
+            </div>
+            <div class="vehicle-preset-grid" id="vehiclePresetChips"></div>
+          </div>
+          <div class="vehicle-picker-app" aria-label="เลือกข้อมูลรถแบบเร็ว">
+            <div>
+              <span class="mini-label">ยี่ห้อยอดนิยม</span>
+              <div class="choice-chip-row" id="vehicleBrandChips"></div>
+            </div>
+            <div>
+              <span class="mini-label">รุ่นที่แนะนำ</span>
+              <div class="choice-chip-row" id="vehicleModelChips"></div>
+            </div>
+          </div>
+          <div class="field-grid">
             <label>
               ปีรถ
               <input id="vehicleYear" type="number" min="1970" max="2035" placeholder="เช่น 2020">
               <small>ใช้ประเมินอายุรถคร่าว ๆ</small>
             </label>
-          </div>
-          <div class="field-grid">
             <label>
               เลขไมล์ปัจจุบัน
               <input id="mileage" type="number" min="0" placeholder="เช่น 85000">
               <small>ช่วยแนะนำรอบเปลี่ยนตามกิโล</small>
             </label>
+          </div>
+          <div class="field-grid single-field">
             <label>
               ใช้งานรถ
               <select id="usageLevel">

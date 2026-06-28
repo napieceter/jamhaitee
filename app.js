@@ -3,6 +3,15 @@ const severity = document.querySelector("#severity");
 const severityValue = document.querySelector("#severityValue");
 const category = document.querySelector("#category");
 const vehicleFields = document.querySelector("#vehicleFields");
+const vehicleBrand = document.querySelector("#vehicleBrand");
+const vehicleModel = document.querySelector("#vehicleModel");
+const vehicleModelList = document.querySelector("#vehicleModelList");
+const vehicleModelHint = document.querySelector("#vehicleModelHint");
+const vehicleHelper = document.querySelector("#vehicleHelper");
+const vehicleSmartPanel = document.querySelector("#vehicleSmartPanel");
+const vehicleBrandChips = document.querySelector("#vehicleBrandChips");
+const vehicleModelChips = document.querySelector("#vehicleModelChips");
+const vehiclePresetChips = document.querySelector("#vehiclePresetChips");
 const dynamicFields = document.querySelector("#dynamicFields");
 const formShell = document.querySelector("#formShell");
 const resultPanel = document.querySelector("#resultPanel");
@@ -45,6 +54,112 @@ actionToast.setAttribute("role", "status");
 actionToast.setAttribute("aria-live", "polite");
 document.body.appendChild(actionToast);
 let toastTimer;
+
+const vehicleCatalog = [
+  { brand: "Toyota", models: ["Yaris", "Yaris Ativ", "Yaris Cross", "Vios", "Corolla Altis", "Corolla Cross", "Camry", "Prius", "Hilux Revo", "Hilux Champ", "Fortuner", "Veloz", "Innova Zenix", "Alphard", "Majesty", "Commuter", "Hiace", "bZ4X", "GR86", "GR Supra"] },
+  { brand: "Honda", models: ["City", "City Hatchback", "Jazz", "Civic", "Accord", "HR-V", "CR-V", "BR-V", "WR-V", "Freed", "Step WGN e:HEV", "Civic Type R", "e:N1"] },
+  { brand: "Isuzu", models: ["D-Max Spark", "D-Max Spacecab", "D-Max Cab4", "D-Max Hi-Lander", "D-Max V-Cross", "D-Max X-Series", "MU-X", "D-Max EV"] },
+  { brand: "Mitsubishi", models: ["Mirage", "Attrage", "Triton", "Pajero Sport", "Xpander", "Xpander Cross", "Xpander HEV", "Xforce HEV"] },
+  { brand: "Nissan", models: ["March", "Almera", "Note", "Sylphy", "Teana", "Kicks e-POWER", "Navara", "Terra", "Serena", "Leaf", "X-Trail"] },
+  { brand: "Mazda", models: ["Mazda2", "Mazda3", "CX-3", "CX-30", "CX-5", "CX-8", "CX-60", "BT-50", "MX-30"] },
+  { brand: "Ford", models: ["Ranger", "Ranger Raptor", "Everest", "Mustang", "Territory", "Fiesta", "Focus", "EcoSport"] },
+  { brand: "Suzuki", models: ["Swift", "Ciaz", "Celerio", "Ertiga", "XL7", "Carry", "Jimny"] },
+  { brand: "MG", models: ["MG3", "MG4 Electric", "MG5", "MG ZS", "MG ZS EV", "MG HS", "MG VS HEV", "MG EP", "MG Maxus 9", "MG Cyberster", "MG Extender"] },
+  { brand: "BYD", models: ["Dolphin", "Atto 3", "Seal", "Sealion 6 DM-i", "Sealion 7", "M6", "e6"] },
+  { brand: "GWM", models: ["ORA Good Cat", "ORA 07", "Haval Jolion", "Haval H6", "Tank 300", "Tank 500", "Poer Sahar"] },
+  { brand: "NETA", models: ["NETA V", "NETA V-II", "NETA X", "NETA S"] },
+  { brand: "Tesla", models: ["Model 3", "Model Y", "Model S", "Model X"] },
+  { brand: "AION", models: ["AION Y Plus", "AION V", "AION ES", "AION Hyper HT"] },
+  { brand: "Deepal / Changan", models: ["Deepal S05", "Deepal S07", "Deepal L07", "Avatr 11"] },
+  { brand: "Omoda & Jaecoo", models: ["Omoda C5", "Omoda E5", "Jaecoo 6", "Jaecoo 7", "iCar 03"] },
+  { brand: "Hyundai", models: ["H-1", "Staria", "Stargazer", "Creta", "Kona", "IONIQ 5", "IONIQ 6"] },
+  { brand: "Kia", models: ["Carnival", "K2500", "Seltos", "Sorento", "EV5", "EV6", "EV9"] },
+  { brand: "BMW", models: ["1 Series", "2 Series", "3 Series", "4 Series", "5 Series", "7 Series", "X1", "X3", "X4", "X5", "X6", "X7", "iX1", "iX3", "i4", "i5", "i7"] },
+  { brand: "Mercedes-Benz", models: ["A-Class", "C-Class", "E-Class", "S-Class", "GLA", "GLB", "GLC", "GLE", "GLS", "EQA", "EQB", "EQE", "EQS"] },
+  { brand: "Lexus", models: ["LBX", "UX", "NX", "RX", "RZ", "ES", "LS", "LM"] },
+  { brand: "Volvo", models: ["EX30", "XC40", "XC60", "XC90", "C40", "S60", "S90"] },
+  { brand: "Subaru", models: ["Forester", "XV", "Crosstrek", "BRZ", "Outback", "WRX"] },
+  { brand: "Porsche", models: ["Macan", "Cayenne", "Panamera", "Taycan", "911", "718"] },
+  { brand: "MINI", models: ["Cooper", "Countryman", "Clubman"] },
+  { brand: "Peugeot", models: ["2008", "3008", "5008"] },
+  { brand: "อื่น ๆ / ระบุเอง", models: [] }
+];
+const customVehicleBrandValue = "อื่น ๆ / ระบุเอง";
+const featuredVehicleBrands = ["Toyota", "Honda", "Isuzu", "Mitsubishi", "Nissan", "Mazda", "Ford", "MG", "BYD", "GWM", "อื่น ๆ / ระบุเอง"];
+const vehiclePresets = [
+  {
+    key: "oil",
+    icon: "Oil",
+    checkIndexes: [0],
+    warningIndex: 0,
+    usageLevel: "normal",
+    text: {
+      th: { title: "เตือนถ่ายน้ำมันเครื่อง", detail: "ช่วยเตือนรอบถ่ายน้ำมันเครื่องและไส้กรองตามเลขไมล์หรือวันที่เช็กล่าสุด" },
+      en: { title: "Oil service reminder", detail: "Remind me about engine oil and oil filter service by mileage or last service date." },
+      zh: { title: "机油保养提醒", detail: "按里程或上次保养日期提醒更换机油和机油滤清器。" }
+    }
+  },
+  {
+    key: "tires",
+    icon: "Tire",
+    checkIndexes: [2],
+    warningIndex: 0,
+    usageLevel: "normal",
+    text: {
+      th: { title: "เตือนเช็กลมยาง/สลับยาง", detail: "ช่วยเตือนเช็กลมยาง ดอกยาง และรอบสลับยางให้เหมาะกับการใช้งาน" },
+      en: { title: "Tire care reminder", detail: "Remind me to check tire pressure, tread, and tire rotation schedule." },
+      zh: { title: "轮胎检查提醒", detail: "提醒检查胎压、胎纹和轮胎换位周期。" }
+    }
+  },
+  {
+    key: "battery",
+    icon: "12V",
+    checkIndexes: [1],
+    warningIndex: 2,
+    usageLevel: "normal",
+    text: {
+      th: { title: "เตือนเช็กแบตเตอรี่", detail: "ช่วยเตือนตรวจสุขภาพแบตเตอรี่ก่อนมีอาการสตาร์ทยากหรือไฟแบตเตอรี่ขึ้น" },
+      en: { title: "Battery check reminder", detail: "Remind me to check the battery before hard starts or battery warning light issues." },
+      zh: { title: "电瓶检查提醒", detail: "提醒检查电瓶，避免启动困难或电瓶警示灯问题。" }
+    }
+  },
+  {
+    key: "brake",
+    icon: "ABS",
+    checkIndexes: [3],
+    warningIndex: 4,
+    usageLevel: "normal",
+    text: {
+      th: { title: "เตือนเช็กเบรก", detail: "ช่วยเตือนตรวจผ้าเบรก น้ำมันเบรก และอาการเบรกดัง/เบรกสั่น" },
+      en: { title: "Brake check reminder", detail: "Remind me to check brake pads, brake fluid, and any brake noise or vibration." },
+      zh: { title: "刹车检查提醒", detail: "提醒检查刹车片、刹车油，以及刹车异响或抖动。" }
+    }
+  },
+  {
+    key: "tax",
+    icon: "Doc",
+    checkIndexes: [5],
+    warningIndex: 0,
+    usageLevel: "light",
+    text: {
+      th: { title: "เตือนต่อภาษี/พ.ร.บ./ประกัน", detail: "ช่วยเตือนต่อภาษีรถ พ.ร.บ. และประกันก่อนหมดอายุ พร้อมจดวันครบกำหนดให้ชัดเจน" },
+      en: { title: "Tax / insurance renewal", detail: "Remind me before vehicle tax, compulsory insurance, or car insurance expires." },
+      zh: { title: "车税/保险续期提醒", detail: "在车税、强制险或车险到期前提醒。" }
+    }
+  },
+  {
+    key: "full",
+    icon: "AI",
+    checkIndexes: [0, 1, 2, 3, 4],
+    warningIndex: 0,
+    usageLevel: "heavy",
+    text: {
+      th: { title: "ตรวจรถครบชุด", detail: "ช่วยจัดรอบดูแลรถแบบครบชุด น้ำมันเครื่อง แบตเตอรี่ ยาง เบรก แอร์ และรายการที่ควรเฝ้าระวัง" },
+      en: { title: "Full vehicle care plan", detail: "Build a complete care schedule for oil, battery, tires, brakes, AC, and key risk items." },
+      zh: { title: "车辆全套保养计划", detail: "建立机油、电瓶、轮胎、刹车、空调及重点风险项目的提醒计划。" }
+    }
+  }
+];
 
 const i18n = {
   th: {
@@ -228,7 +343,7 @@ const i18n = {
       "#adminPass": "mockup เท่านั้น",
       "#customerName": "ชื่อที่ต้องการให้ระบบเรียก",
       "#phone": "ใช้รับ SMS ในอนาคต",
-      "#vehicleModel": "เช่น Toyota Altis",
+      "#vehicleModel": "เช่น Corolla Altis หรือพิมพ์รุ่นเอง",
       "#vehicleYear": "เช่น 2020",
       "#mileage": "เช่น 85000",
       "#symptoms": "เล่าอาการ สิ่งที่กังวล หรือสิ่งที่อยากให้เตือน"
@@ -247,7 +362,8 @@ const i18n = {
       "#phone": "เบอร์โทร",
       "#channel": "ช่องทางแจ้งเตือน",
       "#notifyTime": "เวลาที่สะดวกรับเตือน",
-      "#vehicleModel": "ยี่ห้อ/รุ่นรถ",
+      "#vehicleBrand": "ยี่ห้อรถ",
+      "#vehicleModel": "รุ่นรถ",
       "#vehicleYear": "ปีรถ",
       "#mileage": "เลขไมล์ปัจจุบัน",
       "#usageLevel": "ใช้งานรถ",
@@ -265,7 +381,8 @@ const i18n = {
       "#phone": "เวอร์ชันร่างยังไม่ส่ง SMS จริง",
       "#channel": "เลือกช่องทางหลักที่อยากให้ระบบเตือน",
       "#notifyTime": "แนะนำช่วงที่เห็นข้อความง่าย",
-      "#vehicleModel": "ช่วยให้คำเตือนอ่านรู้เรื่องขึ้น",
+      "#vehicleBrand": "เลือกยี่ห้อก่อน ระบบจะแนะนำรุ่นที่พบบ่อยให้",
+      "#vehicleModel": "ค้นหารุ่นจากรายการ หรือพิมพ์เองถ้าไม่พบ",
       "#vehicleYear": "ใช้ประเมินอายุรถคร่าว ๆ",
       "#mileage": "ช่วยแนะนำรอบเปลี่ยนตามกิโล",
       "#usageLevel": "รถใช้งานหนักควรเตือนถี่ขึ้น",
@@ -361,6 +478,7 @@ const i18n = {
           docsDetail: "พ.ร.บ. ประกัน ภาษี และเอกสารสำคัญ",
           symptomPrefix: "อาการ",
           focusPrefix: "โฟกัส",
+          model: "รุ่นรถ",
           year: "ปีรถ",
           mileage: "เลขไมล์",
           mileageUnit: "กม.",
@@ -599,16 +717,16 @@ const i18n = {
       "#adminPass": "mockup only",
       "#customerName": "Name for reminders",
       "#phone": "Future SMS number",
-      "#vehicleModel": "e.g. Toyota Altis",
+      "#vehicleModel": "e.g. Corolla Altis or type your model",
       "#vehicleYear": "e.g. 2020",
       "#mileage": "e.g. 85000",
       "#symptoms": "Describe the concern or reminder need"
     },
     labels: {
-      "#memberName": "Member name", "#memberPhone": "Mobile number", "#memberLine": "LINE ID", "#memberChannel": "Primary channel", "#memberPass": "Password or OTP", "#loginId": "Phone or LINE ID", "#loginPass": "Password or OTP", "#adminUser": "Admin account", "#adminPass": "Password or OTP", "#customerName": "Reminder recipient", "#phone": "Phone number", "#channel": "Notification channel", "#notifyTime": "Preferred time", "#vehicleModel": "Vehicle model", "#vehicleYear": "Vehicle year", "#mileage": "Current mileage", "#usageLevel": "Vehicle usage", "#lastService": "Latest service", "#lastOilChange": "Latest oil change", "#symptoms": "Additional details", "#frequency": "Issue frequency", "#severity": "Importance level", "#rescheduleDate": "New date", "#rescheduleTime": "New time", "#userCountInput": "Adjust mock count"
+      "#memberName": "Member name", "#memberPhone": "Mobile number", "#memberLine": "LINE ID", "#memberChannel": "Primary channel", "#memberPass": "Password or OTP", "#loginId": "Phone or LINE ID", "#loginPass": "Password or OTP", "#adminUser": "Admin account", "#adminPass": "Password or OTP", "#customerName": "Reminder recipient", "#phone": "Phone number", "#channel": "Notification channel", "#notifyTime": "Preferred time", "#vehicleBrand": "Vehicle make", "#vehicleModel": "Vehicle model", "#vehicleYear": "Vehicle year", "#mileage": "Current mileage", "#usageLevel": "Vehicle usage", "#lastService": "Latest service", "#lastOilChange": "Latest oil change", "#symptoms": "Additional details", "#frequency": "Issue frequency", "#severity": "Importance level", "#rescheduleDate": "New date", "#rescheduleTime": "New time", "#userCountInput": "Adjust mock count"
     },
     smallAfter: {
-      "#customerName": "Used to personalize the reminder.", "#phone": "Draft version does not send real SMS.", "#channel": "Choose the main notification channel.", "#notifyTime": "Pick a time the message is easy to notice.", "#vehicleModel": "Makes the reminder easier to understand.", "#vehicleYear": "Helps estimate vehicle age.", "#mileage": "Helps estimate service intervals.", "#usageLevel": "Heavy usage may need earlier reminders.", "#lastService": "Leave blank if unsure.", "#lastOilChange": "Used to estimate the next oil-change reminder.", "#symptoms": "Enter only necessary details.", "#frequency": "Helps estimate urgency."
+      "#customerName": "Used to personalize the reminder.", "#phone": "Draft version does not send real SMS.", "#channel": "Choose the main notification channel.", "#notifyTime": "Pick a time the message is easy to notice.", "#vehicleBrand": "Select a make first so the form can suggest common models.", "#vehicleModel": "Search the model list or type it yourself if it is missing.", "#vehicleYear": "Helps estimate vehicle age.", "#mileage": "Helps estimate service intervals.", "#usageLevel": "Heavy usage may need earlier reminders.", "#lastService": "Leave blank if unsure.", "#lastOilChange": "Used to estimate the next oil-change reminder.", "#symptoms": "Enter only necessary details.", "#frequency": "Helps estimate urgency."
     },
     options: { "#usageLevel": ["Normal", "Light", "Heavy / daily"], "#frequency": ["Once", "Sometimes", "Often", "Always"] },
     checkbox: { "#memberConsent": "I consent to use this data only for membership and reminders.", "#consent": "I consent to use this data only to create reminder items." },
@@ -691,6 +809,7 @@ const i18n = {
           docsDetail: "Tax, insurance, compulsory insurance, and key documents",
           symptomPrefix: "Concern",
           focusPrefix: "Focus",
+          model: "vehicle",
           year: "vehicle year",
           mileage: "mileage",
           mileageUnit: "km",
@@ -929,16 +1048,16 @@ const i18n = {
       "#adminPass": "仅草案",
       "#customerName": "提醒称呼",
       "#phone": "未来 SMS 电话",
-      "#vehicleModel": "例如 Toyota Altis",
+      "#vehicleModel": "例如 Corolla Altis，或自行输入车型",
       "#vehicleYear": "例如 2020",
       "#mileage": "例如 85000",
       "#symptoms": "描述需要提醒或担心的事项"
     },
     labels: {
-      "#memberName": "会员名称", "#memberPhone": "手机号码", "#memberLine": "LINE ID", "#memberChannel": "主要渠道", "#memberPass": "密码或 OTP", "#loginId": "手机或 LINE ID", "#loginPass": "密码或 OTP", "#adminUser": "管理员账号", "#adminPass": "密码或 OTP", "#customerName": "提醒对象", "#phone": "电话号码", "#channel": "通知渠道", "#notifyTime": "方便提醒时间", "#vehicleModel": "车辆型号", "#vehicleYear": "车辆年份", "#mileage": "当前里程", "#usageLevel": "车辆使用", "#lastService": "最近保养", "#lastOilChange": "最近换机油", "#symptoms": "补充说明", "#frequency": "发生频率", "#severity": "重要程度", "#rescheduleDate": "新日期", "#rescheduleTime": "新时间", "#userCountInput": "调整模拟数量"
+      "#memberName": "会员名称", "#memberPhone": "手机号码", "#memberLine": "LINE ID", "#memberChannel": "主要渠道", "#memberPass": "密码或 OTP", "#loginId": "手机或 LINE ID", "#loginPass": "密码或 OTP", "#adminUser": "管理员账号", "#adminPass": "密码或 OTP", "#customerName": "提醒对象", "#phone": "电话号码", "#channel": "通知渠道", "#notifyTime": "方便提醒时间", "#vehicleBrand": "车辆品牌", "#vehicleModel": "车辆型号", "#vehicleYear": "车辆年份", "#mileage": "当前里程", "#usageLevel": "车辆使用", "#lastService": "最近保养", "#lastOilChange": "最近换机油", "#symptoms": "补充说明", "#frequency": "发生频率", "#severity": "重要程度", "#rescheduleDate": "新日期", "#rescheduleTime": "新时间", "#userCountInput": "调整模拟数量"
     },
     smallAfter: {
-      "#customerName": "用于个性化提醒。", "#phone": "草案版本不会发送真实 SMS。", "#channel": "选择主要通知渠道。", "#notifyTime": "选择容易看到消息的时间。", "#vehicleModel": "让提醒更容易理解。", "#vehicleYear": "用于估算车辆年限。", "#mileage": "用于估算保养周期。", "#usageLevel": "高频使用可更早提醒。", "#lastService": "不确定可留空。", "#lastOilChange": "用于估算下次换油提醒。", "#symptoms": "只填写必要内容。", "#frequency": "帮助估算紧急程度。"
+      "#customerName": "用于个性化提醒。", "#phone": "草案版本不会发送真实 SMS。", "#channel": "选择主要通知渠道。", "#notifyTime": "选择容易看到消息的时间。", "#vehicleBrand": "先选择品牌，系统会推荐常见车型。", "#vehicleModel": "可搜索车型列表，找不到时可自行输入。", "#vehicleYear": "用于估算车辆年限。", "#mileage": "用于估算保养周期。", "#usageLevel": "高频使用可更早提醒。", "#lastService": "不确定可留空。", "#lastOilChange": "用于估算下次换油提醒。", "#symptoms": "只填写必要内容。", "#frequency": "帮助估算紧急程度。"
     },
     options: { "#usageLevel": ["正常", "少量", "高频 / 每天"], "#frequency": ["一次", "有时", "经常", "每次"] },
     checkbox: { "#memberConsent": "同意仅为会员与提醒服务使用这些资料。", "#consent": "同意仅为生成提醒项目使用这些资料。" },
@@ -1021,6 +1140,7 @@ const i18n = {
           docsDetail: "税费、保险、强制险与重要文件",
           symptomPrefix: "状况",
           focusPrefix: "重点",
+          model: "车辆",
           year: "车辆年份",
           mileage: "里程",
           mileageUnit: "公里",
@@ -1343,7 +1463,7 @@ function setFieldLabel(inputSelector, value) {
 
 function setSmallAfter(inputSelector, value) {
   const input = document.querySelector(inputSelector);
-  const small = input?.nextElementSibling?.tagName === "SMALL" ? input.nextElementSibling : null;
+  const small = input?.closest("label")?.querySelector("small");
   if (small) small.textContent = value;
 }
 
@@ -1359,6 +1479,225 @@ function setSelectOptions(selector, labels) {
   Array.from(select.options).forEach((option, index) => {
     if (labels[index]) option.textContent = labels[index];
   });
+}
+
+function vehicleCopy() {
+  if (currentLang === "en") {
+    return {
+      brandPlaceholder: "Select vehicle make",
+      allBrandsHint: "Select a make first so the form can suggest matching models.",
+      modelHint: "Search the model list or type the model yourself if it is missing.",
+      helperTitle: "If the model is missing",
+      helperBody: "Type the model as well as you know it. The team will verify the vehicle before setting the real reminder cycle.",
+      knownPrefix: "Known model",
+      customPrefix: "Custom model. Team verification needed",
+      suggestionPrefix: "Common models",
+      otherBrand: "Other / type manually",
+      presetTitle: "Quick vehicle jobs",
+      presetSubtitle: "Tap once to fill the title, details, and checklist.",
+      presetApplied: "Vehicle preset applied."
+    };
+  }
+
+  if (currentLang === "zh") {
+    return {
+      brandPlaceholder: "选择车辆品牌",
+      allBrandsHint: "先选择品牌，系统会推荐对应车型。",
+      modelHint: "可搜索车型列表，找不到时可自行输入。",
+      helperTitle: "如果列表没有该车型",
+      helperBody: "请尽量输入已知车型。团队会先核对车辆，再设置正式提醒周期。",
+      knownPrefix: "已识别车型",
+      customPrefix: "自定义车型，需要团队核对",
+      suggestionPrefix: "常见车型",
+      otherBrand: "其他 / 手动输入",
+      presetTitle: "车辆快捷项目",
+      presetSubtitle: "点击一次即可填写标题、详情和检查清单。",
+      presetApplied: "已套用车辆项目。"
+    };
+  }
+
+  return {
+    brandPlaceholder: "เลือกยี่ห้อรถ",
+    allBrandsHint: "เลือกยี่ห้อก่อน ระบบจะแนะนำรุ่นที่ตรงกับยี่ห้อนั้นให้",
+    modelHint: "ค้นหารุ่นจากรายการ หรือพิมพ์เองถ้าไม่พบ",
+    helperTitle: "ถ้าไม่มีรุ่นในรายการ",
+    helperBody: "พิมพ์ชื่อรุ่นเท่าที่ทราบได้เลย ทีมงานจะค้นรุ่นให้ก่อนจัดรอบแจ้งเตือนจริง",
+    knownPrefix: "พบรุ่นในระบบ",
+    customPrefix: "รุ่นที่ระบุเอง ทีมงานต้องตรวจสอบเพิ่ม",
+    suggestionPrefix: "รุ่นที่พบบ่อย",
+    otherBrand: "อื่น ๆ / ระบุเอง",
+    presetTitle: "เลือกงานรถแบบเร็ว",
+    presetSubtitle: "แตะหนึ่งครั้งให้ระบบเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้เอง",
+    presetApplied: "เติมชุดงานรถให้แล้ว"
+  };
+}
+
+function normalizeVehicleName(value) {
+  return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+}
+
+function getVehicleModelsForBrand(brand) {
+  const entry = vehicleCatalog.find((item) => item.brand === brand);
+  if (entry) return entry.models;
+  return vehicleCatalog
+    .filter((item) => item.models.length)
+    .flatMap((item) => item.models.map((model) => `${item.brand} ${model}`));
+}
+
+function isKnownVehicleModel(brand, model) {
+  const normalizedModel = normalizeVehicleName(model);
+  if (!normalizedModel) return false;
+  const models = getVehicleModelsForBrand(brand);
+  return models.some((item) => normalizeVehicleName(item) === normalizedModel || normalizeVehicleName(`${brand} ${item}`) === normalizedModel);
+}
+
+function getVehicleDisplayName() {
+  const brand = vehicleBrand?.value.trim() || "";
+  const model = vehicleModel?.value.trim() || "";
+  if (!brand || brand === customVehicleBrandValue) return model || brand;
+  if (!model) return brand;
+  return normalizeVehicleName(model).startsWith(normalizeVehicleName(brand)) ? model : `${brand} ${model}`;
+}
+
+function populateVehicleBrands() {
+  if (!vehicleBrand) return;
+  const copy = vehicleCopy();
+  const selected = vehicleBrand.value;
+  vehicleBrand.innerHTML = [
+    `<option value="">${escapeHtml(copy.brandPlaceholder)}</option>`,
+    ...vehicleCatalog.map((item) => `<option value="${escapeHtml(item.brand)}">${escapeHtml(item.brand === customVehicleBrandValue ? copy.otherBrand : item.brand)}</option>`)
+  ].join("");
+  vehicleBrand.value = vehicleCatalog.some((item) => item.brand === selected) ? selected : "";
+  renderVehicleBrandChips();
+  renderVehiclePresetChips();
+  updateVehicleModelOptions();
+}
+
+function makeChoiceChip(label, isActive, onClick) {
+  const button = document.createElement("button");
+  button.type = "button";
+  button.className = `choice-chip${isActive ? " is-active" : ""}`;
+  button.textContent = label;
+  button.setAttribute("aria-pressed", isActive ? "true" : "false");
+  button.addEventListener("click", onClick);
+  return button;
+}
+
+function renderVehicleBrandChips() {
+  if (!vehicleBrandChips) return;
+  const copy = vehicleCopy();
+  vehicleBrandChips.innerHTML = "";
+  featuredVehicleBrands.forEach((brand) => {
+    const label = brand === customVehicleBrandValue ? copy.otherBrand : brand;
+    vehicleBrandChips.appendChild(makeChoiceChip(label, vehicleBrand?.value === brand, () => {
+      if (vehicleBrand) vehicleBrand.value = brand;
+      if (vehicleModel) vehicleModel.value = "";
+      renderVehicleBrandChips();
+      updateVehicleModelOptions();
+      vehicleModel?.focus();
+    }));
+  });
+}
+
+function renderVehicleModelChips(models) {
+  if (!vehicleModelChips) return;
+  const copy = vehicleCopy();
+  vehicleModelChips.innerHTML = "";
+  const selected = vehicleModel?.value || "";
+  const topModels = models.slice(0, 8);
+  if (!topModels.length) {
+    vehicleModelChips.appendChild(makeChoiceChip(copy.otherBrand, true, () => vehicleModel?.focus()));
+    return;
+  }
+  topModels.forEach((model) => {
+    vehicleModelChips.appendChild(makeChoiceChip(model, selected === model, () => {
+      if (vehicleModel) vehicleModel.value = model;
+      updateVehicleModelOptions();
+    }));
+  });
+  vehicleModelChips.appendChild(makeChoiceChip(currentLang === "en" ? "Not listed" : currentLang === "zh" ? "未列出" : "ไม่มีในรายการ", false, () => {
+    if (vehicleModel) vehicleModel.value = "";
+    updateVehicleModelOptions();
+    vehicleModel?.focus();
+  }));
+}
+
+function setSelectByIndex(selector, index) {
+  const select = document.querySelector(selector);
+  if (!select || !select.options.length) return;
+  select.selectedIndex = Math.min(Math.max(index, 0), select.options.length - 1);
+}
+
+function applyVehiclePreset(preset) {
+  const title = document.querySelector("#reminderTitle");
+  const symptoms = document.querySelector("#symptoms");
+  const presetText = preset.text[currentLang] || preset.text.th;
+
+  if (title) title.value = presetText.title;
+  if (symptoms) symptoms.value = presetText.detail;
+  setSelectByIndex("#dashboardWarning", preset.warningIndex || 0);
+  const usage = document.querySelector("#usageLevel");
+  if (usage) usage.value = preset.usageLevel || "normal";
+
+  document.querySelectorAll(".quick-check").forEach((input, index) => {
+    input.checked = preset.checkIndexes.includes(index);
+  });
+
+  showToast(vehicleCopy().presetApplied);
+  pulseTarget("#reminderForm");
+}
+
+function renderVehiclePresetChips() {
+  if (!vehiclePresetChips) return;
+  const copy = vehicleCopy();
+  const title = vehicleSmartPanel?.querySelector(".smart-panel-head span");
+  const subtitle = vehicleSmartPanel?.querySelector(".smart-panel-head small");
+  if (title) title.textContent = copy.presetTitle;
+  if (subtitle) subtitle.textContent = copy.presetSubtitle;
+
+  vehiclePresetChips.innerHTML = "";
+  vehiclePresets.forEach((preset) => {
+    const presetText = preset.text[currentLang] || preset.text.th;
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "vehicle-preset-card";
+    button.innerHTML = `
+      <span>${escapeHtml(preset.icon)}</span>
+      <strong>${escapeHtml(presetText.title)}</strong>
+      <small>${escapeHtml(presetText.detail)}</small>
+    `;
+    button.addEventListener("click", () => applyVehiclePreset(preset));
+    vehiclePresetChips.appendChild(button);
+  });
+}
+
+function updateVehicleModelOptions() {
+  if (!vehicleModelList || !vehicleModelHint || !vehicleHelper) return;
+  const copy = vehicleCopy();
+  const brand = vehicleBrand?.value || "";
+  const models = getVehicleModelsForBrand(brand);
+  vehicleModelList.innerHTML = models.map((model) => `<option value="${escapeHtml(model)}"></option>`).join("");
+  renderVehicleBrandChips();
+  renderVehicleModelChips(models);
+
+  const model = vehicleModel?.value.trim() || "";
+  const suggestions = models.slice(0, 5).join(", ");
+  if (!brand) {
+    vehicleModelHint.textContent = copy.allBrandsHint;
+  } else if (!model && suggestions) {
+    vehicleModelHint.textContent = `${copy.suggestionPrefix}: ${suggestions}`;
+  } else if (model && isKnownVehicleModel(brand, model)) {
+    vehicleModelHint.textContent = `${copy.knownPrefix}: ${getVehicleDisplayName()}`;
+  } else if (model) {
+    vehicleModelHint.textContent = `${copy.customPrefix}: ${getVehicleDisplayName()}`;
+  } else {
+    vehicleModelHint.textContent = copy.modelHint;
+  }
+
+  const helperTitle = vehicleHelper.querySelector("strong");
+  const helperBody = vehicleHelper.querySelector("span");
+  if (helperTitle) helperTitle.textContent = copy.helperTitle;
+  if (helperBody) helperBody.textContent = copy.helperBody;
 }
 
 function showToast(message) {
@@ -1451,6 +1790,7 @@ function applyLanguage(nextLang) {
   Object.entries(pack.smallAfter).forEach(([selector, value]) => setSmallAfter(selector, value));
   Object.entries(pack.checkbox).forEach(([selector, value]) => setCheckboxText(selector, value));
   Object.entries(pack.options).forEach(([selector, labels]) => setSelectOptions(selector, labels));
+  populateVehicleBrands();
 
   languageButtons.forEach((button) => {
     button.classList.toggle("is-active", button.dataset.lang === currentLang);
@@ -1501,7 +1841,8 @@ function readForm() {
     notifyTime: document.querySelector("#notifyTime").value,
     reminderTitle: document.querySelector("#reminderTitle")?.value.trim() || "",
     category: category.value,
-    vehicleModel: document.querySelector("#vehicleModel").value.trim(),
+    vehicleBrand: vehicleBrand?.value || "",
+    vehicleModel: getVehicleDisplayName(),
     vehicleYear: document.querySelector("#vehicleYear").value,
     mileage: Number(document.querySelector("#mileage").value || 0),
     usageLevel: document.querySelector("#usageLevel").value,
@@ -1552,6 +1893,7 @@ function buildDefaultReminders(data, risk) {
   if (data.category === "car") {
     const car = reminder.car;
     const carContext = [
+      data.vehicleModel ? `${car.model}: ${data.vehicleModel}` : "",
       data.vehicleYear ? `${car.year} ${data.vehicleYear}` : "",
       data.mileage ? `${car.mileage} ${formatNumber(data.mileage)} ${car.mileageUnit}` : "",
       data.lastOilChange ? `${car.lastOil} ${formatDate(new Date(data.lastOilChange))}` : "",
@@ -1876,6 +2218,7 @@ function setCategory(nextCategory) {
   topicCards.forEach((card) => card.classList.toggle("is-active", card.dataset.category === nextCategory));
   renderDynamicFields(nextCategory);
   renderChecks(nextCategory);
+  if (nextCategory === "car") renderVehiclePresetChips();
   notificationState = { acknowledgedToday: false, rescheduledDate: "", rescheduledTime: "" };
   rescheduleDate.value = "";
   rescheduleTime.value = "09:00";
@@ -2042,6 +2385,11 @@ rescheduleButton.addEventListener("click", () => {
 });
 
 userCountInput.addEventListener("input", updateUserCount);
+vehicleBrand?.addEventListener("change", () => {
+  updateVehicleModelOptions();
+  vehicleModel?.focus();
+});
+vehicleModel?.addEventListener("input", updateVehicleModelOptions);
 vehicleFields.style.display = "none";
 messagePreview.value = "";
 const notifyDateInput = document.querySelector("#notifyDate");
