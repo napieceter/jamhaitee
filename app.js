@@ -12,6 +12,13 @@ const vehicleSmartPanel = document.querySelector("#vehicleSmartPanel");
 const vehicleBrandChips = document.querySelector("#vehicleBrandChips");
 const vehicleModelChips = document.querySelector("#vehicleModelChips");
 const vehiclePresetChips = document.querySelector("#vehiclePresetChips");
+const vehicleYearChips = document.querySelector("#vehicleYearChips");
+const mileageChips = document.querySelector("#mileageChips");
+const mileageNote = document.querySelector("#mileageNote");
+const lastServiceChips = document.querySelector("#lastServiceChips");
+const lastOilChangeChips = document.querySelector("#lastOilChangeChips");
+const notifyDateChips = document.querySelector("#notifyDateChips");
+const rescheduleDateChips = document.querySelector("#rescheduleDateChips");
 const dynamicFields = document.querySelector("#dynamicFields");
 const formShell = document.querySelector("#formShell");
 const resultPanel = document.querySelector("#resultPanel");
@@ -26,6 +33,13 @@ const messagePreview = document.querySelector("#messagePreview");
 const sendLog = document.querySelector("#sendLog");
 const copyMessage = document.querySelector("#copyMessage");
 const simulateSend = document.querySelector("#simulateSend");
+const feedbackPanel = document.querySelector("#feedbackPanel");
+const feedbackGateText = document.querySelector("#feedbackGateText");
+const feedbackRatingChips = document.querySelector("#feedbackRatingChips");
+const feedbackImproveChips = document.querySelector("#feedbackImproveChips");
+const feedbackText = document.querySelector("#feedbackText");
+const saveFeedback = document.querySelector("#saveFeedback");
+const feedbackStatus = document.querySelector("#feedbackStatus");
 const notificationSlots = document.querySelector("#notificationSlots");
 const acknowledgeToday = document.querySelector("#acknowledgeToday");
 const resetAck = document.querySelector("#resetAck");
@@ -54,6 +68,14 @@ actionToast.setAttribute("role", "status");
 actionToast.setAttribute("aria-live", "polite");
 document.body.appendChild(actionToast);
 let toastTimer;
+let feedbackRating = "";
+let feedbackImprovements = [];
+let selectedVehiclePresetKey = "oil";
+const usageCountKey = "jamhaitee-demo-use-count";
+const feedbackKey = "jamhaitee-feedback-draft";
+const mileagePresetValues = [0, 5000, 10000, 20000, 30000, 50000, 80000, 100000, 150000, 200000];
+const dateShortcutDays = [0, 1, 7, 30, 90, 180];
+const futureDateShortcutDays = [0, 1, 3, 7, 14, 30];
 
 const vehicleCatalog = [
   { brand: "Toyota", models: ["Yaris", "Yaris Ativ", "Yaris Cross", "Vios", "Corolla Altis", "Corolla Cross", "Camry", "Prius", "Hilux Revo", "Hilux Champ", "Fortuner", "Veloz", "Innova Zenix", "Alphard", "Majesty", "Commuter", "Hiace", "bZ4X", "GR86", "GR Supra"] },
@@ -1314,10 +1336,11 @@ function applyDatePlaceholders() {
   dateInputSelectors.forEach((selector) => {
     const input = document.querySelector(selector);
     if (!input) return;
-    input.setAttribute("placeholder", "YYYY-MM-DD");
-    input.setAttribute("inputmode", "numeric");
+    input.setAttribute("type", "date");
+    input.removeAttribute("placeholder");
+    input.removeAttribute("inputmode");
     input.setAttribute("autocomplete", "off");
-    input.setAttribute("aria-label", `${input.closest("label")?.textContent.trim().split("\n")[0] || "Date"} YYYY-MM-DD`);
+    input.setAttribute("aria-label", input.closest("label")?.textContent.trim().split("\n")[0] || "Date");
   });
 }
 
@@ -1436,6 +1459,14 @@ function setSafeStorage(key, value) {
   }
 }
 
+function getSafeStorage(key, fallback = "") {
+  try {
+    return localStorage.getItem(key) || fallback;
+  } catch {
+    return fallback;
+  }
+}
+
 function setText(selector, value) {
   document.querySelectorAll(selector).forEach((element) => {
     element.textContent = value;
@@ -1495,7 +1526,13 @@ function vehicleCopy() {
       otherBrand: "Other / type manually",
       presetTitle: "Quick vehicle jobs",
       presetSubtitle: "Tap once to fill the title, details, and checklist.",
-      presetApplied: "Vehicle preset applied."
+      presetApplied: "Vehicle preset applied.",
+      yearQuickLabel: "Quick year",
+      mileageQuickLabel: "Quick mileage",
+      serviceQuickLabel: "Last check shortcuts",
+      oilQuickLabel: "Oil change shortcuts",
+      notSure: "Not sure",
+      customMileagePlaceholder: "If not exact, type it here, e.g. around 83,500 km"
     };
   }
 
@@ -1512,7 +1549,13 @@ function vehicleCopy() {
       otherBrand: "其他 / 手动输入",
       presetTitle: "车辆快捷项目",
       presetSubtitle: "点击一次即可填写标题、详情和检查清单。",
-      presetApplied: "已套用车辆项目。"
+      presetApplied: "已套用车辆项目。",
+      yearQuickLabel: "快速年份",
+      mileageQuickLabel: "快速里程",
+      serviceQuickLabel: "上次检查快捷项",
+      oilQuickLabel: "上次换油快捷项",
+      notSure: "不确定",
+      customMileagePlaceholder: "如果不准确，可输入例如约 83,500 公里"
     };
   }
 
@@ -1528,7 +1571,13 @@ function vehicleCopy() {
     otherBrand: "อื่น ๆ / ระบุเอง",
     presetTitle: "เลือกงานรถแบบเร็ว",
     presetSubtitle: "แตะหนึ่งครั้งให้ระบบเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้เอง",
-    presetApplied: "เติมชุดงานรถให้แล้ว"
+    presetApplied: "เติมชุดงานรถให้แล้ว",
+    yearQuickLabel: "ปีรถแบบเร็ว",
+    mileageQuickLabel: "เลขไมล์แบบเร็ว",
+    serviceQuickLabel: "เช็กล่าสุดแบบเร็ว",
+    oilQuickLabel: "ถ่ายน้ำมันล่าสุดแบบเร็ว",
+    notSure: "ไม่แน่ใจ",
+    customMileagePlaceholder: "ถ้าเลขไมล์ไม่ตรง เช่น ประมาณ 83,500 กม."
   };
 }
 
@@ -1569,7 +1618,7 @@ function populateVehicleBrands() {
   ].join("");
   vehicleBrand.value = vehicleCatalog.some((item) => item.brand === selected) ? selected : "";
   renderVehicleBrandChips();
-  renderVehiclePresetChips();
+  renderVehicleAssistControls();
   updateVehicleModelOptions();
 }
 
@@ -1629,6 +1678,7 @@ function setSelectByIndex(selector, index) {
 }
 
 function applyVehiclePreset(preset) {
+  selectedVehiclePresetKey = preset.key;
   const title = document.querySelector("#reminderTitle");
   const symptoms = document.querySelector("#symptoms");
   const presetText = preset.text[currentLang] || preset.text.th;
@@ -1644,30 +1694,317 @@ function applyVehiclePreset(preset) {
   });
 
   showToast(vehicleCopy().presetApplied);
+  renderVehiclePresetChips();
   pulseTarget("#reminderForm");
+}
+
+function vehiclePresetUiCopy() {
+  if (currentLang === "en") {
+    return {
+      insightLabel: "Smart tip",
+      chooseLabel: "Tap a reminder type",
+      applyHint: "Tap one item to fill the title, detail, and checklist automatically.",
+      selectedPrefix: "Selected"
+    };
+  }
+  if (currentLang === "zh") {
+    return {
+      insightLabel: "小提示",
+      chooseLabel: "选择提醒类型",
+      applyHint: "点选后会自动填写标题、详情和检查清单。",
+      selectedPrefix: "已选择"
+    };
+  }
+  return {
+    insightLabel: "เกร็ดความรู้",
+    chooseLabel: "เลือกประเภทแจ้งเตือน",
+    applyHint: "แตะหนึ่งครั้ง ระบบจะเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้อัตโนมัติ",
+    selectedPrefix: "เลือกอยู่"
+  };
 }
 
 function renderVehiclePresetChips() {
   if (!vehiclePresetChips) return;
   const copy = vehicleCopy();
+  const uiCopy = vehiclePresetUiCopy();
   const title = vehicleSmartPanel?.querySelector(".smart-panel-head span");
   const subtitle = vehicleSmartPanel?.querySelector(".smart-panel-head small");
   if (title) title.textContent = copy.presetTitle;
-  if (subtitle) subtitle.textContent = copy.presetSubtitle;
+  if (subtitle) subtitle.textContent = uiCopy.applyHint;
 
   vehiclePresetChips.innerHTML = "";
+  const selectedPreset = vehiclePresets.find((preset) => preset.key === selectedVehiclePresetKey) || vehiclePresets[0];
+  const selectedText = selectedPreset.text[currentLang] || selectedPreset.text.th;
+
+  const tabs = document.createElement("div");
+  tabs.className = "vehicle-preset-tabs";
+  tabs.setAttribute("role", "tablist");
+  tabs.setAttribute("aria-label", uiCopy.chooseLabel);
+
   vehiclePresets.forEach((preset) => {
     const presetText = preset.text[currentLang] || preset.text.th;
     const button = document.createElement("button");
     button.type = "button";
-    button.className = "vehicle-preset-card";
+    const isActive = preset.key === selectedPreset.key;
+    button.className = `vehicle-preset-tab${isActive ? " is-active" : ""}`;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
     button.innerHTML = `
       <span>${escapeHtml(preset.icon)}</span>
       <strong>${escapeHtml(presetText.title)}</strong>
-      <small>${escapeHtml(presetText.detail)}</small>
     `;
     button.addEventListener("click", () => applyVehiclePreset(preset));
-    vehiclePresetChips.appendChild(button);
+    tabs.appendChild(button);
+  });
+
+  const insight = document.createElement("article");
+  insight.className = "vehicle-insight-card";
+  insight.setAttribute("aria-live", "polite");
+  insight.innerHTML = `
+    <div class="vehicle-insight-kicker">
+      <span>${escapeHtml(selectedPreset.icon)}</span>
+      <strong>${escapeHtml(uiCopy.insightLabel)}</strong>
+    </div>
+    <h4>${escapeHtml(selectedText.title)}</h4>
+    <p>${escapeHtml(selectedText.detail)}</p>
+    <small>${escapeHtml(uiCopy.selectedPrefix)} · ${escapeHtml(selectedText.title)}</small>
+  `;
+
+  vehiclePresetChips.appendChild(tabs);
+  vehiclePresetChips.appendChild(insight);
+}
+
+function setMiniPickerLabel(container, text) {
+  const label = container?.closest(".vehicle-mini-picker, .date-quick-panel")?.querySelector(".mini-label");
+  if (label) label.textContent = text;
+}
+
+function renderVehicleYearChips() {
+  if (!vehicleYearChips) return;
+  const copy = vehicleCopy();
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear, currentYear - 1, currentYear - 3, currentYear - 5, currentYear - 10];
+  const selected = document.querySelector("#vehicleYear")?.value || "";
+  setMiniPickerLabel(vehicleYearChips, copy.yearQuickLabel);
+  vehicleYearChips.innerHTML = "";
+  years.forEach((year) => {
+    vehicleYearChips.appendChild(makeChoiceChip(String(year), selected === String(year), () => {
+      const input = document.querySelector("#vehicleYear");
+      if (input) input.value = year;
+      renderVehicleYearChips();
+    }));
+  });
+  vehicleYearChips.appendChild(makeChoiceChip(currentLang === "en" ? "Type year" : currentLang === "zh" ? "手动输入" : "ระบุปีเอง", false, () => {
+    document.querySelector("#vehicleYear")?.focus();
+  }));
+}
+
+function renderMileageChips() {
+  if (!mileageChips) return;
+  const copy = vehicleCopy();
+  const selected = document.querySelector("#mileage")?.value || "";
+  setMiniPickerLabel(mileageChips, copy.mileageQuickLabel);
+  mileageChips.innerHTML = "";
+  mileagePresetValues.forEach((value) => {
+    const unit = runtimePack().reminder.car.mileageUnit;
+    const label = value === 0 ? "0" : `${formatNumber(value)} ${unit}`;
+    mileageChips.appendChild(makeChoiceChip(label, selected === String(value), () => {
+      const input = document.querySelector("#mileage");
+      if (input) input.value = value;
+      renderMileageChips();
+    }));
+  });
+  mileageChips.appendChild(makeChoiceChip(currentLang === "en" ? "Not exact" : currentLang === "zh" ? "不准确" : "ไม่ตรงเลขนี้", false, () => {
+    mileageNote?.focus();
+  }));
+  if (mileageNote) mileageNote.placeholder = copy.customMileagePlaceholder;
+}
+
+function daysAgoDateValue(days) {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  return toDateInputValue(date);
+}
+
+function dateShortcutLabel(days) {
+  if (currentLang === "en") {
+    if (days === 0) return "Today";
+    if (days === 1) return "Yesterday";
+    return `${days} days ago`;
+  }
+  if (currentLang === "zh") {
+    if (days === 0) return "今天";
+    if (days === 1) return "昨天";
+    return `${days} 天前`;
+  }
+  if (days === 0) return "วันนี้";
+  if (days === 1) return "เมื่อวาน";
+  return `${days} วันก่อน`;
+}
+
+function futureDateValue(days) {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  return toDateInputValue(date);
+}
+
+function futureDateShortcutLabel(days) {
+  if (currentLang === "en") {
+    if (days === 0) return "Today";
+    if (days === 1) return "Tomorrow";
+    return `In ${days} days`;
+  }
+  if (currentLang === "zh") {
+    if (days === 0) return "今天";
+    if (days === 1) return "明天";
+    return `${days} 天后`;
+  }
+  if (days === 0) return "วันนี้";
+  if (days === 1) return "พรุ่งนี้";
+  return `อีก ${days} วัน`;
+}
+
+function futureDatePanelLabel(inputSelector) {
+  if (currentLang === "en") return inputSelector === "#rescheduleDate" ? "Quick reschedule" : "Quick reminder date";
+  if (currentLang === "zh") return inputSelector === "#rescheduleDate" ? "快速改期" : "快速提醒日期";
+  return inputSelector === "#rescheduleDate" ? "เลื่อนแบบเร็ว" : "วันที่แจ้งเตือนแบบเร็ว";
+}
+
+function renderFutureDateChips(container, inputSelector) {
+  if (!container) return;
+  const input = document.querySelector(inputSelector);
+  const selected = input?.value || "";
+  setMiniPickerLabel(container, futureDatePanelLabel(inputSelector));
+  container.innerHTML = "";
+  futureDateShortcutDays.forEach((days) => {
+    const value = futureDateValue(days);
+    container.appendChild(makeChoiceChip(futureDateShortcutLabel(days), selected === value, () => {
+      if (input) input.value = value;
+      renderMainDateShortcuts();
+    }));
+  });
+}
+
+function renderMainDateShortcuts() {
+  renderFutureDateChips(notifyDateChips, "#notifyDate");
+  renderFutureDateChips(rescheduleDateChips, "#rescheduleDate");
+}
+
+function renderDateShortcutChips(container, inputSelector, labelText) {
+  if (!container) return;
+  const input = document.querySelector(inputSelector);
+  const selected = input?.value || "";
+  setMiniPickerLabel(container, labelText);
+  container.innerHTML = "";
+  dateShortcutDays.forEach((days) => {
+    const value = daysAgoDateValue(days);
+    container.appendChild(makeChoiceChip(dateShortcutLabel(days), selected === value, () => {
+      if (input) input.value = value;
+      renderVehicleDateShortcuts();
+    }));
+  });
+  container.appendChild(makeChoiceChip(vehicleCopy().notSure, !selected, () => {
+    if (input) input.value = "";
+    renderVehicleDateShortcuts();
+  }));
+}
+
+function renderVehicleDateShortcuts() {
+  const copy = vehicleCopy();
+  renderDateShortcutChips(lastServiceChips, "#lastService", copy.serviceQuickLabel);
+  renderDateShortcutChips(lastOilChangeChips, "#lastOilChange", copy.oilQuickLabel);
+}
+
+function renderVehicleAssistControls() {
+  renderVehiclePresetChips();
+  renderVehicleYearChips();
+  renderMileageChips();
+  renderVehicleDateShortcuts();
+}
+
+function feedbackCopy() {
+  if (currentLang === "en") {
+    return {
+      gateLocked: (count) => `The feedback survey unlocks after 2 test uses. Current uses: ${count}/2.`,
+      gateOpen: "Unlocked. Ask the customer after 2-3 uses while the experience is still fresh.",
+      statusLocked: "Feedback is not open yet.",
+      statusSaved: "Feedback draft saved in this browser.",
+      save: "Save feedback draft",
+      selectedPrefix: "Selected",
+      ratings: ["Very good", "Good", "Needs improvement"],
+      improvements: ["Fewer steps", "More one-tap choices", "LINE reminder", "Attach photo/receipt", "Clearer price", "Human support"]
+    };
+  }
+  if (currentLang === "zh") {
+    return {
+      gateLocked: (count) => `反馈问卷会在测试使用 2 次后开放。目前 ${count}/2。`,
+      gateOpen: "已开放。建议在客户使用 2-3 次后询问，印象最清楚。",
+      statusLocked: "反馈问卷尚未开放。",
+      statusSaved: "反馈草稿已保存到本浏览器。",
+      save: "保存反馈草稿",
+      selectedPrefix: "已选择",
+      ratings: ["很好", "不错", "需要改进"],
+      improvements: ["步骤更少", "更多一键选项", "LINE 提醒", "上传照片/收据", "价格更清楚", "真人协助"]
+    };
+  }
+  return {
+    gateLocked: (count) => `แบบสอบถามจะเปิดหลังลูกค้าใช้งานทดสอบครบ 2 ครั้ง ตอนนี้ ${count}/2`,
+    gateOpen: "เปิดแล้ว เหมาะกับการถามหลังลูกค้าใช้จริง 2-3 ครั้งตอนที่ยังจำความรู้สึกได้",
+    statusLocked: "ยังไม่เปิดแบบสอบถาม",
+    statusSaved: "บันทึก feedback demo ไว้ใน browser นี้แล้ว",
+    save: "บันทึก feedback ทดสอบ",
+    selectedPrefix: "เลือกแล้ว",
+    ratings: ["ดีมาก", "ดี", "ควรปรับปรุง"],
+    improvements: ["ขั้นตอนน้อยลง", "ปุ่มกดเลือกเพิ่ม", "แจ้งเตือนผ่าน LINE", "แนบรูป/ใบเสร็จ", "ราคาให้ชัดขึ้น", "อยากคุยกับคนดูแล"]
+  };
+}
+
+function getDemoUseCount() {
+  return Number(getSafeStorage(usageCountKey, "0")) || 0;
+}
+
+function setDemoUseCount(count) {
+  setSafeStorage(usageCountKey, String(count));
+}
+
+function makeFeedbackChip(label, isActive, onClick) {
+  const button = makeChoiceChip(label, isActive, onClick);
+  button.classList.add("feedback-chip");
+  return button;
+}
+
+function renderFeedbackPanel() {
+  if (!feedbackPanel || !feedbackRatingChips || !feedbackImproveChips) return;
+  const copy = feedbackCopy();
+  const useCount = getDemoUseCount();
+  const unlocked = useCount >= 2;
+  feedbackPanel.classList.toggle("is-locked", !unlocked);
+  if (feedbackGateText) feedbackGateText.textContent = unlocked ? copy.gateOpen : copy.gateLocked(useCount);
+  if (feedbackStatus) feedbackStatus.textContent = unlocked ? (feedbackRating ? `${copy.selectedPrefix}: ${feedbackRating}` : copy.gateOpen) : copy.statusLocked;
+  if (saveFeedback) saveFeedback.textContent = copy.save;
+
+  feedbackRatingChips.innerHTML = "";
+  copy.ratings.forEach((label) => {
+    feedbackRatingChips.appendChild(makeFeedbackChip(label, feedbackRating === label, () => {
+      if (!unlocked) return;
+      feedbackRating = label;
+      renderFeedbackPanel();
+    }));
+  });
+
+  feedbackImproveChips.innerHTML = "";
+  copy.improvements.forEach((label) => {
+    feedbackImproveChips.appendChild(makeFeedbackChip(label, feedbackImprovements.includes(label), () => {
+      if (!unlocked) return;
+      feedbackImprovements = feedbackImprovements.includes(label)
+        ? feedbackImprovements.filter((item) => item !== label)
+        : [...feedbackImprovements, label];
+      renderFeedbackPanel();
+    }));
+  });
+
+  [feedbackText, saveFeedback].forEach((element) => {
+    if (element) element.disabled = !unlocked;
   });
 }
 
@@ -1816,9 +2153,12 @@ function applyLanguage(nextLang) {
     renderDynamicFields(category.value);
     applyDatePlaceholders();
     renderChecks(category.value);
+    if (category.value === "car") renderVehicleAssistControls();
   }
 
   renderNotificationPolicy();
+  renderMainDateShortcuts();
+  renderFeedbackPanel();
 }
 
 function addDays(days) {
@@ -1845,6 +2185,7 @@ function readForm() {
     vehicleModel: getVehicleDisplayName(),
     vehicleYear: document.querySelector("#vehicleYear").value,
     mileage: Number(document.querySelector("#mileage").value || 0),
+    mileageNote: mileageNote?.value.trim() || "",
     usageLevel: document.querySelector("#usageLevel").value,
     lastService: document.querySelector("#lastService").value,
     lastOilChange: document.querySelector("#lastOilChange").value,
@@ -1896,6 +2237,7 @@ function buildDefaultReminders(data, risk) {
       data.vehicleModel ? `${car.model}: ${data.vehicleModel}` : "",
       data.vehicleYear ? `${car.year} ${data.vehicleYear}` : "",
       data.mileage ? `${car.mileage} ${formatNumber(data.mileage)} ${car.mileageUnit}` : "",
+      data.mileageNote ? `${car.mileage}: ${data.mileageNote}` : "",
       data.lastOilChange ? `${car.lastOil} ${formatDate(new Date(data.lastOilChange))}` : "",
       data.dashboardWarning ? `${car.warning}: ${data.dashboardWarning}` : "",
       data.workDone ? `${car.workDone}: ${data.workDone}` : "",
@@ -2218,7 +2560,7 @@ function setCategory(nextCategory) {
   topicCards.forEach((card) => card.classList.toggle("is-active", card.dataset.category === nextCategory));
   renderDynamicFields(nextCategory);
   renderChecks(nextCategory);
-  if (nextCategory === "car") renderVehiclePresetChips();
+  if (nextCategory === "car") renderVehicleAssistControls();
   notificationState = { acknowledgedToday: false, rescheduledDate: "", rescheduledTime: "" };
   rescheduleDate.value = "";
   rescheduleTime.value = "09:00";
@@ -2355,6 +2697,22 @@ simulateSend.addEventListener("click", () => {
   const target = [data.lineId ? `LINE ID ${data.lineId}` : "", data.phone || ""].filter(Boolean).join(" / ") || langPack().messages.phoneMissing;
   li.textContent = langPack().messages.sendTest(now, data.channel, target);
   sendLog.prepend(li);
+  const nextUseCount = getDemoUseCount() + 1;
+  setDemoUseCount(nextUseCount);
+  renderFeedbackPanel();
+});
+
+saveFeedback?.addEventListener("click", () => {
+  if (getDemoUseCount() < 2) return;
+  const copy = feedbackCopy();
+  setSafeStorage(feedbackKey, JSON.stringify({
+    rating: feedbackRating,
+    improvements: feedbackImprovements,
+    note: feedbackText?.value.trim() || "",
+    savedAt: new Date().toISOString()
+  }));
+  if (feedbackStatus) feedbackStatus.textContent = copy.statusSaved;
+  showToast(copy.statusSaved);
 });
 
 acknowledgeToday.addEventListener("click", () => {
@@ -2390,6 +2748,12 @@ vehicleBrand?.addEventListener("change", () => {
   vehicleModel?.focus();
 });
 vehicleModel?.addEventListener("input", updateVehicleModelOptions);
+document.querySelector("#vehicleYear")?.addEventListener("input", renderVehicleYearChips);
+document.querySelector("#mileage")?.addEventListener("input", renderMileageChips);
+document.querySelector("#lastService")?.addEventListener("input", renderVehicleDateShortcuts);
+document.querySelector("#lastOilChange")?.addEventListener("input", renderVehicleDateShortcuts);
+document.querySelector("#notifyDate")?.addEventListener("input", renderMainDateShortcuts);
+document.querySelector("#rescheduleDate")?.addEventListener("input", renderMainDateShortcuts);
 vehicleFields.style.display = "none";
 messagePreview.value = "";
 const notifyDateInput = document.querySelector("#notifyDate");

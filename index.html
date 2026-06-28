@@ -513,9 +513,13 @@
           </label>
           <label>
             วันที่แจ้งเตือน
-            <input id="notifyDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+            <input id="notifyDate" type="date">
             <small>ถ้าเว้นไว้ ระบบจะใช้วันนี้</small>
           </label>
+        </div>
+        <div class="date-quick-panel">
+          <span class="mini-label">วันที่แจ้งเตือนแบบเร็ว</span>
+          <div class="choice-chip-row" id="notifyDateChips"></div>
         </div>
 
         <label>
@@ -581,14 +585,25 @@
           <div class="field-grid">
             <label>
               ปีรถ
-              <input id="vehicleYear" type="number" min="1970" max="2035" placeholder="เช่น 2020">
+              <input id="vehicleYear" type="number" min="1970" max="2035" step="1" placeholder="เช่น 2020">
               <small>ใช้ประเมินอายุรถคร่าว ๆ</small>
             </label>
             <label>
               เลขไมล์ปัจจุบัน
-              <input id="mileage" type="number" min="0" placeholder="เช่น 85000">
+              <input id="mileage" type="number" min="0" step="1000" placeholder="เช่น 85000">
               <small>ช่วยแนะนำรอบเปลี่ยนตามกิโล</small>
             </label>
+          </div>
+          <div class="vehicle-quick-row">
+            <div class="vehicle-mini-picker">
+              <span class="mini-label">ปีรถแบบเร็ว</span>
+              <div class="choice-chip-row" id="vehicleYearChips"></div>
+            </div>
+            <div class="vehicle-mini-picker">
+              <span class="mini-label">เลขไมล์แบบเร็ว</span>
+              <div class="choice-chip-row" id="mileageChips"></div>
+              <input id="mileageNote" class="inline-free-input" type="text" placeholder="ถ้าเลขไมล์ไม่ตรง เช่น ประมาณ 83,500 กม.">
+            </div>
           </div>
           <div class="field-grid single-field">
             <label>
@@ -604,14 +619,24 @@
           <div class="field-grid">
             <label>
               เช็กล่าสุด
-              <input id="lastService" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+              <input id="lastService" type="date">
               <small>ถ้าไม่แน่ใจเว้นไว้ได้</small>
             </label>
             <label>
               ถ่ายน้ำมันเครื่องล่าสุด
-              <input id="lastOilChange" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+              <input id="lastOilChange" type="date">
               <small>ใช้คำนวณรอบเตือนครั้งถัดไป</small>
             </label>
+          </div>
+          <div class="vehicle-quick-row">
+            <div class="vehicle-mini-picker">
+              <span class="mini-label">เช็กล่าสุดแบบเร็ว</span>
+              <div class="choice-chip-row" id="lastServiceChips"></div>
+            </div>
+            <div class="vehicle-mini-picker">
+              <span class="mini-label">ถ่ายน้ำมันล่าสุดแบบเร็ว</span>
+              <div class="choice-chip-row" id="lastOilChangeChips"></div>
+            </div>
           </div>
         </div>
 
@@ -687,12 +712,16 @@
             <div class="field-grid">
               <label>
                 เลื่อนเป็นวันที่
-                <input id="rescheduleDate" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+                <input id="rescheduleDate" type="date">
               </label>
               <label>
                 เวลาใหม่
                 <input id="rescheduleTime" type="time" value="09:00">
               </label>
+            </div>
+            <div class="date-quick-panel compact">
+              <span class="mini-label">เลื่อนแบบเร็ว</span>
+              <div class="choice-chip-row" id="rescheduleDateChips"></div>
             </div>
             <button id="rescheduleButton" type="button" class="secondary-button full">เลื่อนวัน/เวลาแจ้งเตือน</button>
           </div>
@@ -706,6 +735,19 @@
             <button id="copyMessage" type="button" class="secondary-button">คัดลอก</button>
             <button id="simulateSend" type="button" class="primary-button">บันทึกทดสอบ</button>
           </div>
+        </div>
+
+        <div class="feedback-panel" id="feedbackPanel">
+          <div>
+            <p class="eyebrow small">AFTER 2 USES</p>
+            <h3>แบบสอบถามหลังใช้งาน</h3>
+            <p class="muted" id="feedbackGateText">จะเปิดหลังลูกค้าใช้งานครบ 2 ครั้ง เพื่อถามสั้น ๆ ว่าดีไหมและอยากให้ปรับอะไร</p>
+          </div>
+          <div class="feedback-choice-grid" id="feedbackRatingChips"></div>
+          <div class="feedback-choice-grid" id="feedbackImproveChips"></div>
+          <textarea id="feedbackText" rows="3" placeholder="อยากให้เพิ่มอะไร หรือมีอะไรที่ยังไม่สะดวก"></textarea>
+          <button id="saveFeedback" type="button" class="secondary-button full">บันทึก feedback ทดสอบ</button>
+          <p class="form-note" id="feedbackStatus">ยังไม่เปิดแบบสอบถาม</p>
         </div>
 
         <div class="log-box">
