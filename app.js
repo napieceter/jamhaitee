@@ -17,6 +17,8 @@ const mileageChips = document.querySelector("#mileageChips");
 const mileageNote = document.querySelector("#mileageNote");
 const lastServiceChips = document.querySelector("#lastServiceChips");
 const lastOilChangeChips = document.querySelector("#lastOilChangeChips");
+const lastServiceAge = document.querySelector("#lastServiceAge");
+const lastOilChangeAge = document.querySelector("#lastOilChangeAge");
 const notifyDateChips = document.querySelector("#notifyDateChips");
 const rescheduleDateChips = document.querySelector("#rescheduleDateChips");
 const dynamicFields = document.querySelector("#dynamicFields");
@@ -25,6 +27,10 @@ const resultPanel = document.querySelector("#resultPanel");
 const questionnaireTitle = document.querySelector("#questionnaireTitle");
 const topicCards = Array.from(document.querySelectorAll(".topic-card"));
 const quickChecks = document.querySelector("#quickChecks");
+const selectedReminderSummary = document.querySelector("#selectedReminderSummary");
+const addReminderItem = document.querySelector("#addReminderItem");
+const reminderQueueList = document.querySelector("#reminderQueueList");
+const queueStatus = document.querySelector("#queueStatus");
 const timeline = document.querySelector("#timeline");
 const riskLevel = document.querySelector("#riskLevel");
 const riskBadge = document.querySelector("#riskBadge");
@@ -70,12 +76,27 @@ document.body.appendChild(actionToast);
 let toastTimer;
 let feedbackRating = "";
 let feedbackImprovements = [];
+let reminderQueue = [];
 let selectedVehiclePresetKey = "oil";
+let selectedCategoryPresetKeys = {
+  health: "medicine",
+  home: "ac",
+  document: "bill",
+  business: "followup"
+};
 const usageCountKey = "jamhaitee-demo-use-count";
 const feedbackKey = "jamhaitee-feedback-draft";
 const mileagePresetValues = [0, 5000, 10000, 20000, 30000, 50000, 80000, 100000, 150000, 200000];
-const dateShortcutDays = [0, 1, 7, 30, 90, 180];
+const dateShortcutDays = [0, 1, 7, 30, 90, 180, 365, 730];
 const futureDateShortcutDays = [0, 1, 3, 7, 14, 30];
+const vehiclePresetIntervals = {
+  oil: 180,
+  tires: 180,
+  battery: 730,
+  brake: 180,
+  tax: 365,
+  full: 180
+};
 
 const vehicleCatalog = [
   { brand: "Toyota", models: ["Yaris", "Yaris Ativ", "Yaris Cross", "Vios", "Corolla Altis", "Corolla Cross", "Camry", "Prius", "Hilux Revo", "Hilux Champ", "Fortuner", "Veloz", "Innova Zenix", "Alphard", "Majesty", "Commuter", "Hiace", "bZ4X", "GR86", "GR Supra"] },
@@ -182,6 +203,193 @@ const vehiclePresets = [
     }
   }
 ];
+
+const categoryPresets = {
+  health: [
+    {
+      key: "medicine",
+      icon: "ยา",
+      intervalDays: 1,
+      checks: ["กินยา"],
+      text: {
+        th: { title: "เตือนกินยา", detail: "ตั้งรอบเตือนกินยาให้ตรงเวลา พร้อมกดรับทราบเพื่อลดการเตือนซ้ำ" },
+        en: { title: "Medicine reminder", detail: "Set a clear medicine reminder and acknowledge it when done." },
+        zh: { title: "用药提醒", detail: "设置清楚的用药提醒，并在完成后确认。" }
+      }
+    },
+    {
+      key: "appointment",
+      icon: "นัด",
+      intervalDays: 30,
+      checks: ["นัดหมอ"],
+      text: {
+        th: { title: "เตือนนัดหมอ", detail: "บันทึกวันนัดครั้งถัดไป เตือนล่วงหน้า และเลื่อนวันได้ถ้ายังไม่สะดวก" },
+        en: { title: "Doctor appointment", detail: "Save the next appointment and remind ahead of time." },
+        zh: { title: "就诊预约", detail: "保存下次预约并提前提醒。" }
+      }
+    },
+    {
+      key: "refill",
+      icon: "รับยา",
+      intervalDays: 30,
+      checks: ["รับยาเพิ่ม"],
+      text: {
+        th: { title: "เตือนรับยาเพิ่ม", detail: "ช่วยกันลืมวันรับยา/เติมยา โดยไม่ต้องกรอกประวัติสุขภาพละเอียด" },
+        en: { title: "Medicine refill", detail: "Remind before medicine runs out without collecting unnecessary health details." },
+        zh: { title: "补药提醒", detail: "在药快用完前提醒，避免收集过多健康资料。" }
+      }
+    },
+    {
+      key: "checkup",
+      icon: "ตรวจ",
+      intervalDays: 365,
+      checks: ["ตรวจสุขภาพ"],
+      text: {
+        th: { title: "เตือนตรวจสุขภาพ", detail: "ตั้งรอบตรวจสุขภาพประจำปีหรือรอบที่คุณหมอกำหนด" },
+        en: { title: "Health checkup", detail: "Track annual or doctor-defined health checkup cycles." },
+        zh: { title: "体检提醒", detail: "追踪年度或医生建议的体检周期。" }
+      }
+    }
+  ],
+  home: [
+    {
+      key: "ac",
+      icon: "แอร์",
+      intervalDays: 180,
+      checks: ["ล้างแอร์"],
+      text: {
+        th: { title: "เตือนล้างแอร์", detail: "ตั้งรอบล้างแอร์และเช็กอาการผิดปกติ เช่น ไม่เย็น น้ำหยด หรือมีกลิ่น" },
+        en: { title: "AC cleaning", detail: "Track AC cleaning and common issues such as weak cooling or dripping." },
+        zh: { title: "空调清洁", detail: "追踪空调清洁周期和不制冷、滴水等问题。" }
+      }
+    },
+    {
+      key: "filter",
+      icon: "กรอง",
+      intervalDays: 90,
+      checks: ["ไส้กรองน้ำ"],
+      text: {
+        th: { title: "เตือนเปลี่ยนไส้กรอง", detail: "ช่วยจำรอบเปลี่ยนไส้กรองน้ำ/อากาศตามวันที่ทำล่าสุด" },
+        en: { title: "Filter replacement", detail: "Remember water or air filter replacement cycles." },
+        zh: { title: "滤芯更换", detail: "记录净水或空气滤芯更换周期。" }
+      }
+    },
+    {
+      key: "fee",
+      icon: "จ่าย",
+      intervalDays: 30,
+      checks: ["ค่าส่วนกลาง"],
+      text: {
+        th: { title: "เตือนค่าส่วนกลาง/ค่าน้ำไฟ", detail: "ตั้งเตือนรอบจ่ายเงินประจำเดือนให้ไม่พลาดวันครบกำหนด" },
+        en: { title: "Monthly fees", detail: "Remind about condo fees, utilities, or monthly home payments." },
+        zh: { title: "月费提醒", detail: "提醒物业费、水电费或其他月度付款。" }
+      }
+    },
+    {
+      key: "repair",
+      icon: "ซ่อม",
+      intervalDays: 7,
+      checks: ["งานซ่อม"],
+      text: {
+        th: { title: "ติดตามงานซ่อม", detail: "ใช้ตามงานช่าง นัดซ่อม หรือเช็กว่างานที่แจ้งไว้จบแล้วหรือยัง" },
+        en: { title: "Repair follow-up", detail: "Follow up on repair jobs, appointments, or unresolved home issues." },
+        zh: { title: "维修跟进", detail: "跟进维修、预约或尚未解决的问题。" }
+      }
+    }
+  ],
+  document: [
+    {
+      key: "bill",
+      icon: "บิล",
+      intervalDays: 30,
+      checks: ["ค่างวด/บิล"],
+      text: {
+        th: { title: "เตือนค่างวด/บิล", detail: "ตั้งเตือนวันครบกำหนดจ่าย เพื่อเลี่ยงค่าปรับและการลืมจ่าย" },
+        en: { title: "Bill due reminder", detail: "Track due dates to avoid missed payments or late fees." },
+        zh: { title: "账单到期提醒", detail: "追踪到期日，避免逾期或罚款。" }
+      }
+    },
+    {
+      key: "insurance",
+      icon: "ประกัน",
+      intervalDays: 365,
+      checks: ["ประกัน"],
+      text: {
+        th: { title: "เตือนต่อประกัน", detail: "บันทึกวันหมดอายุประกัน และเตือนล่วงหน้าก่อนครบกำหนด" },
+        en: { title: "Insurance renewal", detail: "Save expiry dates and remind before renewal is due." },
+        zh: { title: "保险续期", detail: "保存到期日并提前提醒续期。" }
+      }
+    },
+    {
+      key: "license",
+      icon: "ใบอนุญาต",
+      intervalDays: 365,
+      checks: ["ใบขับขี่", "ใบอนุญาต"],
+      text: {
+        th: { title: "เตือนต่อบัตร/ใบอนุญาต", detail: "ใช้กับใบขับขี่ บัตรประชาชน ใบอนุญาต หรือเอกสารที่มีวันหมดอายุ" },
+        en: { title: "ID / license renewal", detail: "Track IDs, driving licenses, permits, and expiry-based documents." },
+        zh: { title: "证件续期", detail: "追踪身份证、驾照、许可和有到期日的文件。" }
+      }
+    },
+    {
+      key: "contract",
+      icon: "สัญญา",
+      intervalDays: 365,
+      checks: ["สัญญา/โดเมน"],
+      text: {
+        th: { title: "เตือนสัญญา/โดเมน", detail: "ตั้งเตือนต่อสัญญา โดเมน หรือสมาชิกที่ไม่ควรปล่อยหมดอายุ" },
+        en: { title: "Contract / domain", detail: "Remind before contracts, domains, or subscriptions expire." },
+        zh: { title: "合同 / 域名", detail: "在合同、域名或订阅到期前提醒。" }
+      }
+    }
+  ],
+  business: [
+    {
+      key: "followup",
+      icon: "ลูกค้า",
+      intervalDays: 3,
+      checks: ["ติดตามลูกค้า"],
+      text: {
+        th: { title: "ติดตามลูกค้า", detail: "เตือนกลับไปหาลูกค้าหลังเสนอราคา นัดหมาย หรือรอคำตอบ" },
+        en: { title: "Customer follow-up", detail: "Remind after quotes, appointments, or waiting for customer decisions." },
+        zh: { title: "客户跟进", detail: "报价、预约或等待客户回复后提醒跟进。" }
+      }
+    },
+    {
+      key: "contract",
+      icon: "สัญญา",
+      intervalDays: 365,
+      checks: ["ต่อสัญญา"],
+      text: {
+        th: { title: "เตือนต่อสัญญาธุรกิจ", detail: "บันทึกรอบต่อสัญญา ลูกค้า คู่ค้า หรือบริการที่ใช้ประจำ" },
+        en: { title: "Business contract renewal", detail: "Track customer, vendor, or service contract renewals." },
+        zh: { title: "业务合同续期", detail: "追踪客户、供应商或服务合同续期。" }
+      }
+    },
+    {
+      key: "payment",
+      icon: "เงิน",
+      intervalDays: 30,
+      checks: ["รอบจ่ายเงิน"],
+      text: {
+        th: { title: "เตือนรอบจ่ายเงิน", detail: "ช่วยจำรอบจ่ายเงิน ใบแจ้งหนี้ ค่าบริการ หรือค่าเช่ารายเดือน" },
+        en: { title: "Payment cycle", detail: "Remember invoices, service fees, rent, or recurring payments." },
+        zh: { title: "付款周期", detail: "提醒发票、服务费、租金或周期性付款。" }
+      }
+    },
+    {
+      key: "equipment",
+      icon: "อุปกรณ์",
+      intervalDays: 90,
+      checks: ["อุปกรณ์"],
+      text: {
+        th: { title: "บำรุงรักษาอุปกรณ์", detail: "ตั้งรอบตรวจอุปกรณ์ เครื่องมือ หรือระบบที่ใช้ทำงานประจำ" },
+        en: { title: "Equipment maintenance", detail: "Track equipment, tools, or work-system maintenance cycles." },
+        zh: { title: "设备维护", detail: "追踪设备、工具或工作系统维护周期。" }
+      }
+    }
+  ]
+};
 
 const i18n = {
   th: {
@@ -365,9 +573,9 @@ const i18n = {
       "#adminPass": "mockup เท่านั้น",
       "#customerName": "ชื่อที่ต้องการให้ระบบเรียก",
       "#phone": "ใช้รับ SMS ในอนาคต",
-      "#vehicleModel": "เช่น Corolla Altis หรือพิมพ์รุ่นเอง",
-      "#vehicleYear": "เช่น 2020",
-      "#mileage": "เช่น 85000",
+      "#vehicleModel": "ถ้าต้องการระบุ เช่น Corolla Altis",
+      "#vehicleYear": "เช่น 2020 (ไม่บังคับ)",
+      "#mileage": "เช่น 85000 หรือจิ้มเลขไมล์เร็ว",
       "#symptoms": "เล่าอาการ สิ่งที่กังวล หรือสิ่งที่อยากให้เตือน"
     },
     labels: {
@@ -384,12 +592,12 @@ const i18n = {
       "#phone": "เบอร์โทร",
       "#channel": "ช่องทางแจ้งเตือน",
       "#notifyTime": "เวลาที่สะดวกรับเตือน",
-      "#vehicleBrand": "ยี่ห้อรถ",
-      "#vehicleModel": "รุ่นรถ",
-      "#vehicleYear": "ปีรถ",
+      "#vehicleBrand": "ยี่ห้อรถ (ไม่บังคับ)",
+      "#vehicleModel": "รุ่นรถ (ไม่บังคับ)",
+      "#vehicleYear": "ปีรถ (ไม่บังคับ)",
       "#mileage": "เลขไมล์ปัจจุบัน",
       "#usageLevel": "ใช้งานรถ",
-      "#lastService": "เช็กล่าสุด",
+      "#lastService": "ทำรายการนี้ล่าสุดเมื่อไร",
       "#lastOilChange": "ถ่ายน้ำมันเครื่องล่าสุด",
       "#symptoms": "รายละเอียดเพิ่มเติม",
       "#frequency": "ความถี่ของปัญหา",
@@ -403,13 +611,13 @@ const i18n = {
       "#phone": "เวอร์ชันร่างยังไม่ส่ง SMS จริง",
       "#channel": "เลือกช่องทางหลักที่อยากให้ระบบเตือน",
       "#notifyTime": "แนะนำช่วงที่เห็นข้อความง่าย",
-      "#vehicleBrand": "เลือกยี่ห้อก่อน ระบบจะแนะนำรุ่นที่พบบ่อยให้",
-      "#vehicleModel": "ค้นหารุ่นจากรายการ หรือพิมพ์เองถ้าไม่พบ",
-      "#vehicleYear": "ใช้ประเมินอายุรถคร่าว ๆ",
-      "#mileage": "ช่วยแนะนำรอบเปลี่ยนตามกิโล",
+      "#vehicleBrand": "ไม่บังคับ ใช้ช่วยระบุรถให้ชัดขึ้นเท่านั้น",
+      "#vehicleModel": "พิมพ์เองได้ ถ้าไม่รู้รุ่นให้เว้นไว้ก่อน",
+      "#vehicleYear": "ไม่จำเป็นต่อการตั้งเตือน ใส่เฉพาะถ้าจำได้",
+      "#mileage": "ใช้ช่วยคำนวณรอบงานที่อิงกิโล เช่น น้ำมันเครื่องหรือยาง",
       "#usageLevel": "รถใช้งานหนักควรเตือนถี่ขึ้น",
-      "#lastService": "ถ้าไม่แน่ใจเว้นไว้ได้",
-      "#lastOilChange": "ใช้คำนวณรอบเตือนครั้งถัดไป",
+      "#lastService": "เลือกวันที่แล้วระบบจะคำนวณวัน/เดือน/ปีให้ทันที",
+      "#lastOilChange": "ใช้เฉพาะงานน้ำมันเครื่อง ถ้าไม่ใช่เว้นไว้ได้",
       "#symptoms": "กรอกเท่าที่จำเป็น ไม่ต้องใส่ข้อมูลอ่อนไหวเกินจำเป็น",
       "#frequency": "ช่วยประเมินว่าควรเตือนเร็วแค่ไหน"
     },
@@ -429,11 +637,11 @@ const i18n = {
       business: ["ธุรกิจ", "อุปกรณ์ รอบจ่ายเงิน ต่อสัญญา ติดตามลูกค้า"]
     },
     topicConfig: {
-      car: { title: "แบบสอบถามรถยนต์", placeholder: "เช่น สตาร์ทยาก มีไฟเตือน หรืออยากตั้งรอบบำรุงรักษา", checks: ["น้ำมันเครื่อง", "แบตเตอรี่", "ยาง/ลมยาง", "เบรก", "แอร์", "ภาษี/พ.ร.บ./ประกัน"] },
-      home: { title: "แบบสอบถามบ้าน/คอนโด", placeholder: "เช่น ล้างแอร์ เปลี่ยนไส้กรอง หรือจ่ายค่าส่วนกลาง", checks: ["ล้างแอร์", "ไส้กรองน้ำ", "ค่าส่วนกลาง", "ปลวก/แมลง", "ประกันบ้าน", "งานซ่อม"] },
-      health: { title: "แบบสอบถามสุขภาพ/ยา", placeholder: "เช่น ต้องการเตือนกินยา นัดหมอ หรือติดตามอาการ", checks: ["กินยา", "นัดหมอ", "ตรวจสุขภาพ", "วัดความดัน", "ออกกำลังกาย", "รับยาเพิ่ม"] },
-      document: { title: "แบบสอบถามบิล/เอกสาร", placeholder: "เช่น ค่างวด ประกัน ต่ออายุบัตร ใบอนุญาต สัญญา หรือโดเมน", checks: ["ค่างวด/บิล", "ประกัน", "บัตรประชาชน", "ใบขับขี่", "พาสปอร์ต", "สัญญา/โดเมน"] },
-      business: { title: "แบบสอบถามธุรกิจ", placeholder: "เช่น บำรุงอุปกรณ์ ต่อสัญญา หรือรอบจ่ายเงิน", checks: ["อุปกรณ์", "รอบจ่ายเงิน", "ต่อสัญญา", "ภาษี", "ใบอนุญาต", "ติดตามลูกค้า"] }
+      car: { title: "ตั้งเตือนเรื่องรถยนต์", placeholder: "เช่น ต่อ พ.ร.บ. ถ่ายน้ำมันเครื่อง เช็กยาง หรือต่อประกัน", checks: ["น้ำมันเครื่อง", "แบตเตอรี่", "ยาง/ลมยาง", "เบรก", "แอร์", "ภาษี/พ.ร.บ./ประกัน"] },
+      home: { title: "ตั้งเตือนเรื่องบ้าน/คอนโด", placeholder: "เช่น ล้างแอร์ เปลี่ยนไส้กรอง หรือจ่ายค่าส่วนกลาง", checks: ["ล้างแอร์", "ไส้กรองน้ำ", "ค่าส่วนกลาง", "ปลวก/แมลง", "ประกันบ้าน", "งานซ่อม"] },
+      health: { title: "ตั้งเตือนสุขภาพ/ยา", placeholder: "เช่น ต้องการเตือนกินยา นัดหมอ หรือติดตามอาการ", checks: ["กินยา", "นัดหมอ", "ตรวจสุขภาพ", "วัดความดัน", "ออกกำลังกาย", "รับยาเพิ่ม"] },
+      document: { title: "ตั้งเตือนบิล/เอกสาร", placeholder: "เช่น ค่างวด ประกัน ต่ออายุบัตร ใบอนุญาต สัญญา หรือโดเมน", checks: ["ค่างวด/บิล", "ประกัน", "บัตรประชาชน", "ใบขับขี่", "พาสปอร์ต", "สัญญา/โดเมน"] },
+      business: { title: "ตั้งเตือนเรื่องธุรกิจ", placeholder: "เช่น บำรุงอุปกรณ์ ต่อสัญญา หรือรอบจ่ายเงิน", checks: ["อุปกรณ์", "รอบจ่ายเงิน", "ต่อสัญญา", "ภาษี", "ใบอนุญาต", "ติดตามลูกค้า"] }
     },
     stats: {
       service: [{ label: "สุขภาพ/ยา/นัดหมาย", value: 50 }, { label: "รถ/ยาง/ของเหลว", value: 42 }, { label: "บิล/ค่างวด/เอกสาร", value: 34 }, { label: "บ้าน/คอนโด", value: 26 }, { label: "ธุรกิจ/รอบจ่ายเงิน", value: 22 }],
@@ -504,6 +712,7 @@ const i18n = {
           year: "ปีรถ",
           mileage: "เลขไมล์",
           mileageUnit: "กม.",
+          lastService: "ทำล่าสุด",
           lastOil: "ถ่ายน้ำมันเครื่องล่าสุด",
           warning: "ไฟเตือน",
           workDone: "ทำแล้ว",
@@ -760,11 +969,11 @@ const i18n = {
       business: ["Business", "Equipment, payments, contracts, customer follow-up"]
     },
     topicConfig: {
-      car: { title: "Vehicle questionnaire", placeholder: "e.g. hard start, warning light, or maintenance schedule", checks: ["Engine oil", "Battery", "Tires / pressure", "Brakes", "A/C", "Tax / insurance"] },
-      home: { title: "Home / condo questionnaire", placeholder: "e.g. A/C cleaning, filter replacement, or common fee", checks: ["A/C cleaning", "Water filter", "Common fee", "Pest control", "Home insurance", "Repair work"] },
-      health: { title: "Health / medicine questionnaire", placeholder: "e.g. medicine reminder, doctor appointment, or symptom tracking", checks: ["Medicine", "Doctor appointment", "Health checkup", "Blood pressure", "Exercise", "Refill medicine"] },
-      document: { title: "Bills / documents questionnaire", placeholder: "e.g. payment due date, insurance, ID renewal, license, contract, or domain", checks: ["Bills / payments", "Insurance", "ID card", "Driving license", "Passport", "Contract / domain"] },
-      business: { title: "Business questionnaire", placeholder: "e.g. equipment maintenance, contract renewal, or payment cycle", checks: ["Equipment", "Payment cycle", "Contract renewal", "Tax", "Permit", "Customer follow-up"] }
+      car: { title: "Set a vehicle reminder", placeholder: "e.g. hard start, warning light, or maintenance schedule", checks: ["Engine oil", "Battery", "Tires / pressure", "Brakes", "A/C", "Tax / insurance"] },
+      home: { title: "Set a home / condo reminder", placeholder: "e.g. A/C cleaning, filter replacement, or common fee", checks: ["A/C cleaning", "Water filter", "Common fee", "Pest control", "Home insurance", "Repair work"] },
+      health: { title: "Set a health / medicine reminder", placeholder: "e.g. medicine reminder, doctor appointment, or symptom tracking", checks: ["Medicine", "Doctor appointment", "Health checkup", "Blood pressure", "Exercise", "Refill medicine"] },
+      document: { title: "Set a bills / documents reminder", placeholder: "e.g. payment due date, insurance, ID renewal, license, contract, or domain", checks: ["Bills / payments", "Insurance", "ID card", "Driving license", "Passport", "Contract / domain"] },
+      business: { title: "Set a business reminder", placeholder: "e.g. equipment maintenance, contract renewal, or payment cycle", checks: ["Equipment", "Payment cycle", "Contract renewal", "Tax", "Permit", "Customer follow-up"] }
     },
     stats: {
       service: [{ label: "Health / medicine / appointments", value: 50 }, { label: "Car / tires / fluids", value: 42 }, { label: "Bills / payments / documents", value: 34 }, { label: "Home / condo upkeep", value: 26 }, { label: "Business / payment cycles", value: 22 }],
@@ -835,6 +1044,7 @@ const i18n = {
           year: "vehicle year",
           mileage: "mileage",
           mileageUnit: "km",
+          lastService: "latest service",
           lastOil: "latest oil change",
           warning: "warning light",
           workDone: "handled",
@@ -1091,11 +1301,11 @@ const i18n = {
       business: ["业务", "设备、付款周期、合同、客户跟进"]
     },
     topicConfig: {
-      car: { title: "车辆问卷", placeholder: "例如启动困难、警示灯、或保养周期", checks: ["机油", "电池", "轮胎 / 胎压", "刹车", "空调", "税费 / 保险"] },
-      home: { title: "家庭 / 公寓问卷", placeholder: "例如空调清洗、滤芯更换、或公共费用", checks: ["空调清洁", "净水滤芯", "公共费用", "虫害防治", "房屋保险", "维修"] },
-      health: { title: "健康 / 用药问卷", placeholder: "例如用药提醒、医生预约、或症状追踪", checks: ["用药", "医生预约", "体检", "血压", "运动", "补药"] },
-      document: { title: "账单 / 文件问卷", placeholder: "例如付款日、保险、证件续期、许可、合同、或域名", checks: ["账单 / 付款", "保险", "身份证", "驾驶证", "护照", "合同 / 域名"] },
-      business: { title: "业务问卷", placeholder: "例如设备维护、合同续期、或付款周期", checks: ["设备", "付款周期", "合同续期", "税务", "许可证", "客户跟进"] }
+      car: { title: "设置车辆提醒", placeholder: "例如启动困难、警示灯、或保养周期", checks: ["机油", "电池", "轮胎 / 胎压", "刹车", "空调", "税费 / 保险"] },
+      home: { title: "设置家庭 / 公寓提醒", placeholder: "例如空调清洗、滤芯更换、或公共费用", checks: ["空调清洁", "净水滤芯", "公共费用", "虫害防治", "房屋保险", "维修"] },
+      health: { title: "设置健康 / 用药提醒", placeholder: "例如用药提醒、医生预约、或症状追踪", checks: ["用药", "医生预约", "体检", "血压", "运动", "补药"] },
+      document: { title: "设置账单 / 文件提醒", placeholder: "例如付款日、保险、证件续期、许可、合同、或域名", checks: ["账单 / 付款", "保险", "身份证", "驾驶证", "护照", "合同 / 域名"] },
+      business: { title: "设置业务提醒", placeholder: "例如设备维护、合同续期、或付款周期", checks: ["设备", "付款周期", "合同续期", "税务", "许可证", "客户跟进"] }
     },
     stats: {
       service: [{ label: "健康 / 用药 / 预约", value: 50 }, { label: "车辆 / 轮胎 / 油液", value: 42 }, { label: "账单 / 付款 / 文件", value: 34 }, { label: "家庭 / 公寓维护", value: 26 }, { label: "业务 / 付款周期", value: 22 }],
@@ -1166,6 +1376,7 @@ const i18n = {
           year: "车辆年份",
           mileage: "里程",
           mileageUnit: "公里",
+          lastService: "上次处理",
           lastOil: "最近换机油",
           warning: "警示灯",
           workDone: "已处理",
@@ -1244,7 +1455,7 @@ const languagePolish = {
     "#payment .eyebrow": "ช่องทางชำระเงิน",
     ".process-section .eyebrow": "วิธีทำงาน",
     ".topics-section .eyebrow": "เลือกเรื่องแจ้งเตือน",
-    "#reminderForm .eyebrow": "แบบสอบถาม",
+    "#reminderForm .eyebrow": "ตั้งเตือน",
     "#resultPanel .eyebrow": "แผนแจ้งเตือน",
     ".notification-card .eyebrow": "รอบแจ้งเตือนรายวัน",
     ".safe-pill": "โหมดร่างปลอดภัย"
@@ -1270,7 +1481,7 @@ const languagePolish = {
     "#payment .eyebrow": "PAYMENT OPTIONS",
     ".process-section .eyebrow": "HOW IT WORKS",
     ".topics-section .eyebrow": "CHOOSE A REMINDER",
-    "#reminderForm .eyebrow": "QUESTIONNAIRE",
+    "#reminderForm .eyebrow": "REMINDER",
     "#resultPanel .eyebrow": "REMINDER PLAN",
     ".notification-card .eyebrow": "DAILY REMINDER",
     ".safe-pill": "Safe draft mode"
@@ -1296,14 +1507,14 @@ const languagePolish = {
     "#payment .eyebrow": "支付渠道",
     ".process-section .eyebrow": "使用流程",
     ".topics-section .eyebrow": "选择提醒事项",
-    "#reminderForm .eyebrow": "问卷",
+    "#reminderForm .eyebrow": "提醒",
     "#resultPanel .eyebrow": "提醒计划",
     ".notification-card .eyebrow": "每日提醒",
     ".safe-pill": "安全草案模式"
   }
 };
 
-const dateInputSelectors = ["#lastService", "#lastOilChange", "#notifyDate", "#rescheduleDate", "#doctorVisit"];
+const dateInputSelectors = ["#lastService", "#lastOilChange", "#notifyDate", "#rescheduleDate", "#doctorVisit", "#lastGenericAction"];
 
 const translatedAttributes = {
   th: [
@@ -1369,27 +1580,27 @@ const dailySlots = [
 
 const topicConfig = {
   car: {
-    title: "แบบสอบถามรถยนต์",
-    placeholder: "เช่น สตาร์ทยาก มีไฟเตือน หรืออยากตั้งรอบบำรุงรักษา",
+    title: "ตั้งเตือนเรื่องรถยนต์",
+    placeholder: "เช่น ต่อ พ.ร.บ. ถ่ายน้ำมันเครื่อง เช็กยาง หรือต่อประกัน",
     checks: ["น้ำมันเครื่อง", "แบตเตอรี่", "ยาง/ลมยาง", "เบรก", "แอร์", "ภาษี/พ.ร.บ./ประกัน"]
   },
   home: {
-    title: "แบบสอบถามบ้าน/คอนโด",
+    title: "ตั้งเตือนเรื่องบ้าน/คอนโด",
     placeholder: "เช่น ล้างแอร์ เปลี่ยนไส้กรอง หรือจ่ายค่าส่วนกลาง",
     checks: ["ล้างแอร์", "ไส้กรองน้ำ", "ค่าส่วนกลาง", "ปลวก/แมลง", "ประกันบ้าน", "งานซ่อม"]
   },
   health: {
-    title: "แบบสอบถามสุขภาพ/ยา",
+    title: "ตั้งเตือนสุขภาพ/ยา",
     placeholder: "เช่น ต้องการเตือนกินยา นัดหมอ หรือติดตามอาการ",
     checks: ["กินยา", "นัดหมอ", "ตรวจสุขภาพ", "วัดความดัน", "ออกกำลังกาย", "รับยาเพิ่ม"]
   },
   document: {
-    title: "แบบสอบถามเอกสาร",
+    title: "ตั้งเตือนบิล/เอกสาร",
     placeholder: "เช่น ต่ออายุบัตร ใบอนุญาต สัญญา หรือโดเมน",
     checks: ["บัตรประชาชน", "ใบขับขี่", "พาสปอร์ต", "สัญญา", "โดเมน", "ใบอนุญาต"]
   },
   business: {
-    title: "แบบสอบถามธุรกิจ",
+    title: "ตั้งเตือนเรื่องธุรกิจ",
     placeholder: "เช่น บำรุงอุปกรณ์ ต่อสัญญา หรือรอบจ่ายเงิน",
     checks: ["อุปกรณ์", "รอบจ่ายเงิน", "ต่อสัญญา", "ภาษี", "ใบอนุญาต", "ติดตามลูกค้า"]
   }
@@ -1516,7 +1727,7 @@ function vehicleCopy() {
   if (currentLang === "en") {
     return {
       brandPlaceholder: "Select vehicle make",
-      allBrandsHint: "Select a make first so the form can suggest matching models.",
+      allBrandsHint: "Optional. Use it only when it helps identify the vehicle.",
       modelHint: "Search the model list or type the model yourself if it is missing.",
       helperTitle: "If the model is missing",
       helperBody: "Type the model as well as you know it. The team will verify the vehicle before setting the real reminder cycle.",
@@ -1524,12 +1735,12 @@ function vehicleCopy() {
       customPrefix: "Custom model. Team verification needed",
       suggestionPrefix: "Common models",
       otherBrand: "Other / type manually",
-      presetTitle: "Quick vehicle jobs",
-      presetSubtitle: "Tap once to fill the title, details, and checklist.",
+      presetTitle: "Choose a vehicle reminder",
+    presetSubtitle: "Tap the job first, then enter the latest date so the system can calculate the cycle.",
       presetApplied: "Vehicle preset applied.",
       yearQuickLabel: "Quick year",
       mileageQuickLabel: "Quick mileage",
-      serviceQuickLabel: "Last check shortcuts",
+    serviceQuickLabel: "Latest work date",
       oilQuickLabel: "Oil change shortcuts",
       notSure: "Not sure",
       customMileagePlaceholder: "If not exact, type it here, e.g. around 83,500 km"
@@ -1539,7 +1750,7 @@ function vehicleCopy() {
   if (currentLang === "zh") {
     return {
       brandPlaceholder: "选择车辆品牌",
-      allBrandsHint: "先选择品牌，系统会推荐对应车型。",
+      allBrandsHint: "可选，仅用于更清楚地识别车辆。",
       modelHint: "可搜索车型列表，找不到时可自行输入。",
       helperTitle: "如果列表没有该车型",
       helperBody: "请尽量输入已知车型。团队会先核对车辆，再设置正式提醒周期。",
@@ -1547,12 +1758,12 @@ function vehicleCopy() {
       customPrefix: "自定义车型，需要团队核对",
       suggestionPrefix: "常见车型",
       otherBrand: "其他 / 手动输入",
-      presetTitle: "车辆快捷项目",
-      presetSubtitle: "点击一次即可填写标题、详情和检查清单。",
+      presetTitle: "选择车辆提醒",
+    presetSubtitle: "先选择项目，再填写上次处理日期，系统会计算周期。",
       presetApplied: "已套用车辆项目。",
       yearQuickLabel: "快速年份",
       mileageQuickLabel: "快速里程",
-      serviceQuickLabel: "上次检查快捷项",
+    serviceQuickLabel: "上次处理日期",
       oilQuickLabel: "上次换油快捷项",
       notSure: "不确定",
       customMileagePlaceholder: "如果不准确，可输入例如约 83,500 公里"
@@ -1561,7 +1772,7 @@ function vehicleCopy() {
 
   return {
     brandPlaceholder: "เลือกยี่ห้อรถ",
-    allBrandsHint: "เลือกยี่ห้อก่อน ระบบจะแนะนำรุ่นที่ตรงกับยี่ห้อนั้นให้",
+    allBrandsHint: "ไม่บังคับ ใช้ช่วยระบุรถให้ชัดขึ้นเท่านั้น",
     modelHint: "ค้นหารุ่นจากรายการ หรือพิมพ์เองถ้าไม่พบ",
     helperTitle: "ถ้าไม่มีรุ่นในรายการ",
     helperBody: "พิมพ์ชื่อรุ่นเท่าที่ทราบได้เลย ทีมงานจะค้นรุ่นให้ก่อนจัดรอบแจ้งเตือนจริง",
@@ -1569,12 +1780,12 @@ function vehicleCopy() {
     customPrefix: "รุ่นที่ระบุเอง ทีมงานต้องตรวจสอบเพิ่ม",
     suggestionPrefix: "รุ่นที่พบบ่อย",
     otherBrand: "อื่น ๆ / ระบุเอง",
-    presetTitle: "เลือกงานรถแบบเร็ว",
-    presetSubtitle: "แตะหนึ่งครั้งให้ระบบเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้เอง",
+    presetTitle: "เลือกประเภทงานเตือนรถ",
+    presetSubtitle: "เลือกงานก่อน แล้วใส่วันที่ทำล่าสุด ระบบจะคำนวณว่าผ่านมากี่วัน/เดือน/ปีและควรเตือนรอบถัดไปเมื่อไร",
     presetApplied: "เติมชุดงานรถให้แล้ว",
     yearQuickLabel: "ปีรถแบบเร็ว",
     mileageQuickLabel: "เลขไมล์แบบเร็ว",
-    serviceQuickLabel: "เช็กล่าสุดแบบเร็ว",
+    serviceQuickLabel: "ทำรายการนี้ล่าสุด",
     oilQuickLabel: "ถ่ายน้ำมันล่าสุดแบบเร็ว",
     notSure: "ไม่แน่ใจ",
     customMileagePlaceholder: "ถ้าเลขไมล์ไม่ตรง เช่น ประมาณ 83,500 กม."
@@ -1694,7 +1905,9 @@ function applyVehiclePreset(preset) {
   });
 
   showToast(vehicleCopy().presetApplied);
+  renderVehicleDateSummaries();
   renderVehiclePresetChips();
+  renderSelectedReminderSummary();
   pulseTarget("#reminderForm");
 }
 
@@ -1703,7 +1916,7 @@ function vehiclePresetUiCopy() {
     return {
       insightLabel: "Smart tip",
       chooseLabel: "Tap a reminder type",
-      applyHint: "Tap one item to fill the title, detail, and checklist automatically.",
+    applyHint: "Choose one reminder type, then add the latest date. Extra car details are optional.",
       selectedPrefix: "Selected"
     };
   }
@@ -1711,14 +1924,14 @@ function vehiclePresetUiCopy() {
     return {
       insightLabel: "小提示",
       chooseLabel: "选择提醒类型",
-      applyHint: "点选后会自动填写标题、详情和检查清单。",
+      applyHint: "选择一种提醒类型，再填写上次日期；车辆型号等资料可选。",
       selectedPrefix: "已选择"
     };
   }
   return {
     insightLabel: "เกร็ดความรู้",
     chooseLabel: "เลือกประเภทแจ้งเตือน",
-    applyHint: "แตะหนึ่งครั้ง ระบบจะเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้อัตโนมัติ",
+    applyHint: "เลือกงานที่ต้องเตือนก่อน แล้วใส่วันที่ทำล่าสุด รายละเอียดรถอื่น ๆ ใส่เพิ่มได้ถ้าจำเป็น",
     selectedPrefix: "เลือกอยู่"
   };
 }
@@ -1760,6 +1973,14 @@ function renderVehiclePresetChips() {
   const insight = document.createElement("article");
   insight.className = "vehicle-insight-card";
   insight.setAttribute("aria-live", "polite");
+  const lastDateForPreset = selectedPreset.key === "oil"
+    ? (document.querySelector("#lastOilChange")?.value || document.querySelector("#lastService")?.value || "")
+    : (document.querySelector("#lastService")?.value || "");
+  const dueInsight = buildVehicleDateInsight(
+    lastDateForPreset,
+    selectedPreset.key,
+    vehicleLifecycleCopy().lastServiceEmpty
+  );
   insight.innerHTML = `
     <div class="vehicle-insight-kicker">
       <span>${escapeHtml(selectedPreset.icon)}</span>
@@ -1767,11 +1988,190 @@ function renderVehiclePresetChips() {
     </div>
     <h4>${escapeHtml(selectedText.title)}</h4>
     <p>${escapeHtml(selectedText.detail)}</p>
+    <small class="vehicle-due-line">${escapeHtml(dueInsight)}</small>
     <small>${escapeHtml(uiCopy.selectedPrefix)} · ${escapeHtml(selectedText.title)}</small>
   `;
 
   vehiclePresetChips.appendChild(tabs);
   vehiclePresetChips.appendChild(insight);
+}
+
+function categoryPresetUiCopy() {
+  if (currentLang === "en") {
+    return {
+      panelTitle: "Choose a quick reminder",
+      panelHint: "Tap one item to fill the title and checklist. Add details only if needed.",
+      insightLabel: "Reminder guide",
+      selectedPrefix: "Selected",
+      latestDateLabel: "When was this last done?",
+      latestDateEmpty: "Choose the latest date to calculate how long it has been.",
+      quickDateLabel: "Latest date shortcuts",
+      advancedTitle: "Extra details, only if needed",
+      donePrefix: "Last done",
+      elapsedPrefix: "elapsed",
+      nextDuePrefix: "next estimated cycle",
+      futurePrefix: "This date is in the future",
+      overduePrefix: "past the suggested cycle by",
+      note: "Estimate only. Use the actual due date if you already know it."
+    };
+  }
+  if (currentLang === "zh") {
+    return {
+      panelTitle: "选择快速提醒",
+      panelHint: "点选后自动填写标题和清单；必要时再补充详情。",
+      insightLabel: "提醒建议",
+      selectedPrefix: "已选择",
+      latestDateLabel: "上次处理是什么时候？",
+      latestDateEmpty: "选择上次日期，系统会计算已过多久。",
+      quickDateLabel: "上次日期快捷项",
+      advancedTitle: "补充资料，需要时再填",
+      donePrefix: "上次处理",
+      elapsedPrefix: "已过",
+      nextDuePrefix: "预计下次周期",
+      futurePrefix: "该日期尚未到来",
+      overduePrefix: "已超过建议周期",
+      note: "仅供估算；若已知道实际到期日，请以实际日期为准。"
+    };
+  }
+  return {
+    panelTitle: "เลือกงานเตือนแบบเร็ว",
+    panelHint: "จิ้มหนึ่งรายการเพื่อเติมหัวข้อและเช็กลิสต์ รายละเอียดอื่นค่อยใส่ถ้าจำเป็น",
+    insightLabel: "แนวทางเตือน",
+    selectedPrefix: "เลือกอยู่",
+    latestDateLabel: "ทำรายการนี้ล่าสุดเมื่อไร",
+    latestDateEmpty: "เลือกวันที่ล่าสุด เพื่อให้ระบบคำนวณว่าผ่านมาแล้วเท่าไร",
+    quickDateLabel: "ทำล่าสุดแบบเร็ว",
+    advancedTitle: "รายละเอียดเสริม ถ้าจำเป็น",
+    donePrefix: "ทำล่าสุด",
+    elapsedPrefix: "ผ่านมาแล้ว",
+    nextDuePrefix: "รอบถัดไปประมาณ",
+    futurePrefix: "วันที่นี้ยังไม่ถึง",
+    overduePrefix: "เลยรอบแนะนำมาแล้ว",
+    note: "เป็นการประมาณเบื้องต้น ถ้ารู้วันครบกำหนดจริงให้ใช้วันจริงเป็นหลัก"
+  };
+}
+
+function getCategoryPresets(nextCategory = category.value) {
+  return categoryPresets[nextCategory] || [];
+}
+
+function getSelectedCategoryPreset(nextCategory = category.value) {
+  const presets = getCategoryPresets(nextCategory);
+  const selectedKey = selectedCategoryPresetKeys[nextCategory] || presets[0]?.key;
+  return presets.find((preset) => preset.key === selectedKey) || presets[0] || null;
+}
+
+function buildCategoryDateInsight(dateValue, preset, emptyText) {
+  const copy = categoryPresetUiCopy();
+  const selectedDate = dateFromInputValue(dateValue);
+  if (!selectedDate) return emptyText;
+
+  const diffDays = dayDiff(selectedDate);
+  if (diffDays < 0) {
+    return `${copy.futurePrefix} · ${formatDuration(diffDays)}`;
+  }
+
+  const intervalDays = preset?.intervalDays || 30;
+  const nextDue = addDaysToDate(selectedDate, intervalDays);
+  const remainingDays = intervalDays - diffDays;
+  const dueText = remainingDays < 0
+    ? `${copy.overduePrefix} ${formatDuration(remainingDays)}`
+    : `${copy.nextDuePrefix} ${formatDate(nextDue)}`;
+
+  return `${copy.donePrefix} ${formatDate(selectedDate)} · ${copy.elapsedPrefix} ${formatDuration(diffDays)} · ${dueText}`;
+}
+
+function renderGenericDateShortcuts() {
+  const input = document.querySelector("#lastGenericAction");
+  const chips = document.querySelector("#lastGenericActionChips");
+  const summary = document.querySelector("#lastGenericActionAge");
+  if (!input || !chips || !summary) return;
+
+  const preset = getSelectedCategoryPreset();
+  const copy = categoryPresetUiCopy();
+  summary.textContent = buildCategoryDateInsight(input.value, preset, copy.latestDateEmpty);
+
+  setMiniPickerLabel(chips, copy.quickDateLabel);
+  chips.innerHTML = "";
+  dateShortcutDays.forEach((days) => {
+    const value = daysAgoDateValue(days);
+    chips.appendChild(makeChoiceChip(dateShortcutLabel(days), input.value === value, () => {
+      input.value = value;
+      renderGenericDateShortcuts();
+      renderCategoryPresetPanel(category.value);
+      renderSelectedReminderSummary();
+    }));
+  });
+}
+
+function applyCategoryPreset(nextCategory, preset) {
+  if (!preset) return;
+  selectedCategoryPresetKeys[nextCategory] = preset.key;
+  const presetText = preset.text[currentLang] || preset.text.th;
+  const title = document.querySelector("#reminderTitle");
+  const symptoms = document.querySelector("#symptoms");
+  if (title) title.value = presetText.title;
+  if (symptoms) symptoms.value = presetText.detail;
+
+  document.querySelectorAll(".quick-check").forEach((input) => {
+    input.checked = preset.checks.includes(input.value);
+  });
+
+  showToast((currentLang === "en" && "Reminder type applied.") || (currentLang === "zh" && "已套用提醒类型。") || "เติมประเภทงานให้แล้ว");
+  renderCategoryPresetPanel(nextCategory);
+  renderGenericDateShortcuts();
+  renderSelectedReminderSummary();
+}
+
+function renderCategoryPresetPanel(nextCategory = category.value) {
+  const panel = document.querySelector("#categoryPresetPanel");
+  if (!panel) return;
+  const presets = getCategoryPresets(nextCategory);
+  if (!presets.length) {
+    panel.innerHTML = "";
+    return;
+  }
+
+  const copy = categoryPresetUiCopy();
+  const selectedPreset = getSelectedCategoryPreset(nextCategory);
+  const selectedText = selectedPreset.text[currentLang] || selectedPreset.text.th;
+  const latestDate = document.querySelector("#lastGenericAction")?.value || "";
+  const dueInsight = buildCategoryDateInsight(latestDate, selectedPreset, copy.latestDateEmpty);
+
+  panel.innerHTML = `
+    <div class="smart-panel-head">
+      <span>${escapeHtml(copy.panelTitle)}</span>
+      <small>${escapeHtml(copy.panelHint)}</small>
+    </div>
+    <div class="category-preset-tabs" role="tablist" aria-label="${escapeHtml(copy.panelTitle)}"></div>
+    <article class="category-insight-card" aria-live="polite">
+      <div class="category-insight-kicker">
+        <span>${escapeHtml(selectedPreset.icon)}</span>
+        <strong>${escapeHtml(copy.insightLabel)}</strong>
+      </div>
+      <h4>${escapeHtml(selectedText.title)}</h4>
+      <p>${escapeHtml(selectedText.detail)}</p>
+      <small class="category-due-line">${escapeHtml(dueInsight)}</small>
+      <small>${escapeHtml(copy.selectedPrefix)} · ${escapeHtml(selectedText.title)}</small>
+    </article>
+  `;
+
+  const tabs = panel.querySelector(".category-preset-tabs");
+  presets.forEach((preset) => {
+    const presetText = preset.text[currentLang] || preset.text.th;
+    const button = document.createElement("button");
+    button.type = "button";
+    const isActive = preset.key === selectedPreset.key;
+    button.className = `category-preset-tab${isActive ? " is-active" : ""}`;
+    button.setAttribute("role", "tab");
+    button.setAttribute("aria-selected", isActive ? "true" : "false");
+    button.innerHTML = `
+      <span>${escapeHtml(preset.icon)}</span>
+      <strong>${escapeHtml(presetText.title)}</strong>
+    `;
+    button.addEventListener("click", () => applyCategoryPreset(nextCategory, preset));
+    tabs.appendChild(button);
+  });
 }
 
 function setMiniPickerLabel(container, text) {
@@ -1812,6 +2212,7 @@ function renderMileageChips() {
       const input = document.querySelector("#mileage");
       if (input) input.value = value;
       renderMileageChips();
+      renderSelectedReminderSummary();
     }));
   });
   mileageChips.appendChild(makeChoiceChip(currentLang === "en" ? "Not exact" : currentLang === "zh" ? "不准确" : "ไม่ตรงเลขนี้", false, () => {
@@ -1839,6 +2240,8 @@ function dateShortcutLabel(days) {
   }
   if (days === 0) return "วันนี้";
   if (days === 1) return "เมื่อวาน";
+  if (days === 365) return "1 ปีก่อน";
+  if (days === 730) return "2 ปีก่อน";
   return `${days} วันก่อน`;
 }
 
@@ -1881,6 +2284,7 @@ function renderFutureDateChips(container, inputSelector) {
     container.appendChild(makeChoiceChip(futureDateShortcutLabel(days), selected === value, () => {
       if (input) input.value = value;
       renderMainDateShortcuts();
+      renderSelectedReminderSummary();
     }));
   });
 }
@@ -1913,6 +2317,9 @@ function renderVehicleDateShortcuts() {
   const copy = vehicleCopy();
   renderDateShortcutChips(lastServiceChips, "#lastService", copy.serviceQuickLabel);
   renderDateShortcutChips(lastOilChangeChips, "#lastOilChange", copy.oilQuickLabel);
+  renderVehicleDateSummaries();
+  renderVehiclePresetChips();
+  renderSelectedReminderSummary();
 }
 
 function renderVehicleAssistControls() {
@@ -2094,6 +2501,166 @@ function formatNumber(value) {
   return value.toLocaleString(langPack().locale);
 }
 
+function getSelectedVehiclePreset() {
+  return vehiclePresets.find((preset) => preset.key === selectedVehiclePresetKey) || vehiclePresets[0];
+}
+
+function dateFromInputValue(dateValue) {
+  if (!dateValue) return null;
+  const date = new Date(`${dateValue}T00:00:00`);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+function addDaysToDate(date, days) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + days);
+  return next;
+}
+
+function dayDiff(fromDate, toDate = new Date()) {
+  const start = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
+  const end = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
+  return Math.round((end - start) / 86400000);
+}
+
+function durationParts(totalDays) {
+  const days = Math.max(0, Math.abs(totalDays));
+  const years = Math.floor(days / 365);
+  const months = Math.floor((days % 365) / 30);
+  const restDays = (days % 365) % 30;
+  return { years, months, days: restDays, totalDays: days };
+}
+
+function formatDuration(totalDays) {
+  const parts = durationParts(totalDays);
+  if (currentLang === "en") {
+    const items = [
+      parts.years ? `${parts.years} yr` : "",
+      parts.months ? `${parts.months} mo` : "",
+      parts.days ? `${parts.days} day` : ""
+    ].filter(Boolean);
+    return items.length ? items.join(" ") : "0 days";
+  }
+  if (currentLang === "zh") {
+    const items = [
+      parts.years ? `${parts.years} 年` : "",
+      parts.months ? `${parts.months} 个月` : "",
+      parts.days ? `${parts.days} 天` : ""
+    ].filter(Boolean);
+    return items.length ? items.join(" ") : "0 天";
+  }
+  const items = [
+    parts.years ? `${parts.years} ปี` : "",
+    parts.months ? `${parts.months} เดือน` : "",
+    parts.days ? `${parts.days} วัน` : ""
+  ].filter(Boolean);
+  return items.length ? items.join(" ") : "0 วัน";
+}
+
+function vehicleLifecycleCopy() {
+  if (currentLang === "en") {
+    return {
+      reminderTitlePlaceholder: "e.g. tax renewal / oil service / tire check",
+      reminderTitleSmall: "This becomes the reminder card title. Choose a vehicle reminder type below to fill it automatically.",
+      lastServiceEmpty: "Choose the latest date to calculate how long it has been.",
+      oilEmpty: "Use this only for oil-service reminders.",
+      donePrefix: "Last done",
+      elapsedPrefix: "elapsed",
+      futurePrefix: "This date is in the future",
+      nextDuePrefix: "next estimated cycle",
+      overduePrefix: "past the suggested cycle by",
+      estimateNote: "Estimate only; confirm with the actual manual or service shop."
+    };
+  }
+  if (currentLang === "zh") {
+    return {
+      reminderTitlePlaceholder: "例如续保 / 换机油 / 检查轮胎",
+      reminderTitleSmall: "这里会成为提醒卡标题。先选择下方车辆提醒类型可自动填写。",
+      lastServiceEmpty: "选择上次处理日期，系统会计算已经过多久。",
+      oilEmpty: "仅在机油保养提醒时填写。",
+      donePrefix: "上次处理",
+      elapsedPrefix: "已过",
+      futurePrefix: "该日期尚未到来",
+      nextDuePrefix: "预计下次周期",
+      overduePrefix: "已超过建议周期",
+      estimateNote: "仅为估算；请以车辆手册或维修厂确认。"
+    };
+  }
+  return {
+    reminderTitlePlaceholder: "เช่น ต่อ พ.ร.บ. / ถ่ายน้ำมันเครื่อง / เช็กยาง",
+    reminderTitleSmall: "หัวข้อนี้จะแสดงบนบัตรแจ้งเตือน เลือกประเภทงานรถด้านล่างเพื่อเติมให้อัตโนมัติ",
+    lastServiceEmpty: "เลือกวันที่ทำล่าสุด เพื่อให้ระบบคำนวณว่าผ่านมาแล้วเท่าไร",
+    oilEmpty: "ใช้เฉพาะงานถ่ายน้ำมันเครื่อง ถ้าไม่ใช่เว้นไว้ได้",
+    donePrefix: "ทำล่าสุด",
+    elapsedPrefix: "ผ่านมาแล้ว",
+    futurePrefix: "วันที่นี้ยังไม่ถึง",
+    nextDuePrefix: "รอบถัดไปประมาณ",
+    overduePrefix: "เลยรอบแนะนำมาแล้ว",
+    estimateNote: "เป็นการประมาณเบื้องต้น ควรยืนยันกับคู่มือรถหรืออู่จริงอีกครั้ง"
+  };
+}
+
+function buildVehicleDateInsight(dateValue, presetKey, emptyText) {
+  const copy = vehicleLifecycleCopy();
+  const selectedDate = dateFromInputValue(dateValue);
+  if (!selectedDate) return emptyText;
+
+  const diffDays = dayDiff(selectedDate);
+  if (diffDays < 0) {
+    return `${copy.futurePrefix} · ${formatDuration(diffDays)}`;
+  }
+
+  const intervalDays = vehiclePresetIntervals[presetKey] || 180;
+  const nextDue = addDaysToDate(selectedDate, intervalDays);
+  const remainingDays = intervalDays - diffDays;
+  const dueText = remainingDays < 0
+    ? `${copy.overduePrefix} ${formatDuration(remainingDays)}`
+    : `${copy.nextDuePrefix} ${formatDate(nextDue)}`;
+
+  return `${copy.donePrefix} ${formatDate(selectedDate)} · ${copy.elapsedPrefix} ${formatDuration(diffDays)} · ${dueText}`;
+}
+
+function renderVehicleDateSummaries() {
+  const selectedPreset = getSelectedVehiclePreset();
+  const copy = vehicleLifecycleCopy();
+  if (lastServiceAge) {
+    lastServiceAge.textContent = buildVehicleDateInsight(
+      document.querySelector("#lastService")?.value || "",
+      selectedPreset.key,
+      copy.lastServiceEmpty
+    );
+  }
+  if (lastOilChangeAge) {
+    lastOilChangeAge.textContent = buildVehicleDateInsight(
+      document.querySelector("#lastOilChange")?.value || "",
+      "oil",
+      copy.oilEmpty
+    );
+  }
+}
+
+function updateReminderTitlePlaceholder() {
+  const titleInput = document.querySelector("#reminderTitle");
+  if (!titleInput) return;
+  const titleSmall = titleInput.closest("label")?.querySelector("small");
+  if (category.value === "car") {
+    const copy = vehicleLifecycleCopy();
+    titleInput.placeholder = copy.reminderTitlePlaceholder;
+    if (titleSmall) titleSmall.textContent = copy.reminderTitleSmall;
+    return;
+  }
+  if (currentLang === "en") {
+    titleInput.placeholder = "e.g. medicine reminder / document renewal";
+    if (titleSmall) titleSmall.textContent = "This title appears on the reminder card for review before real use.";
+  } else if (currentLang === "zh") {
+    titleInput.placeholder = "例如服药提醒 / 文件续期";
+    if (titleSmall) titleSmall.textContent = "此标题会显示在提醒卡上，正式使用前可检查。";
+  } else {
+    titleInput.placeholder = "เช่น เตือนกินยา / ต่อเอกสาร / งานบ้าน";
+    if (titleSmall) titleSmall.textContent = "หัวข้อนี้จะแสดงบนหน้าบัตรแจ้งเตือนให้ตรวจสอบก่อนใช้งานจริง";
+  }
+}
+
 function updateTopicCards() {
   const topics = langPack().topics || i18n.th.topics;
   topicCards.forEach((card) => {
@@ -2122,6 +2689,7 @@ function applyLanguage(nextLang) {
   applyTranslatedAttributes();
   Object.entries(pack.placeholders).forEach(([selector, value]) => setPlaceholder(selector, value));
   applyDatePlaceholders();
+  updateReminderTitlePlaceholder();
   Object.entries(pack.labels).forEach(([selector, value]) => setFieldLabel(selector, value));
   applyDatePlaceholders();
   Object.entries(pack.smallAfter).forEach(([selector, value]) => setSmallAfter(selector, value));
@@ -2150,15 +2718,18 @@ function applyLanguage(nextLang) {
     const config = getTopicConfig(category.value);
     questionnaireTitle.textContent = config.title;
     document.querySelector("#symptoms").placeholder = config.placeholder;
+    updateReminderTitlePlaceholder();
+    renderChecks(category.value);
     renderDynamicFields(category.value);
     applyDatePlaceholders();
-    renderChecks(category.value);
     if (category.value === "car") renderVehicleAssistControls();
   }
 
   renderNotificationPolicy();
   renderMainDateShortcuts();
   renderFeedbackPanel();
+  renderSelectedReminderSummary();
+  renderReminderQueue();
 }
 
 function addDays(days) {
@@ -2172,6 +2743,7 @@ function selectedChecks() {
 }
 
 function readForm() {
+  syncTitleFromSelectedPreset();
   return {
     name: document.querySelector("#customerName").value.trim() || runtimePack().defaultName,
     phone: document.querySelector("#phone").value.trim(),
@@ -2189,6 +2761,7 @@ function readForm() {
     usageLevel: document.querySelector("#usageLevel").value,
     lastService: document.querySelector("#lastService").value,
     lastOilChange: document.querySelector("#lastOilChange").value,
+    lastGenericAction: document.querySelector("#lastGenericAction")?.value || "",
     dashboardWarning: document.querySelector("#dashboardWarning")?.value || "",
     workDone: document.querySelector("#workDone")?.value.trim() || "",
     handledStatus: document.querySelector("#handledStatus")?.value || "",
@@ -2198,10 +2771,181 @@ function readForm() {
     medicineStatus: document.querySelector("#medicineStatus")?.value || "",
     symptoms: document.querySelector("#symptoms").value.trim(),
     checks: selectedChecks(),
+    selectedPreset: category.value === "car" ? selectedVehiclePresetKey : (selectedCategoryPresetKeys[category.value] || ""),
     frequency: document.querySelector("#frequency").value,
     severity: Number(severity.value),
     consent: document.querySelector("#consent").checked
   };
+}
+
+function queueCopy() {
+  if (currentLang === "en") {
+    return {
+      noSelection: "Choose a reminder item first.",
+      added: "Added to this reminder set.",
+      empty: "No items yet. Tap Add this item when you want to create several reminders together.",
+      count: (count) => `${count} item${count === 1 ? "" : "s"} in this reminder set`,
+      remove: "Remove",
+      selectedLabel: "Selected item",
+      nextLabel: "Reminder date",
+      detailsLabel: "What opens next",
+      detailHint: "Only the selected item's needed fields open. Extra details stay tucked away.",
+      multiHint: "You can add several reminders before creating the final plan.",
+      addHint: "Tap Add this item for every reminder you want in the same set."
+    };
+  }
+  if (currentLang === "zh") {
+    return {
+      noSelection: "请先选择一个提醒项目。",
+      added: "已加入本次提醒组。",
+      empty: "尚无项目。如果要一次建立多个提醒，请点“加入此项目”。",
+      count: (count) => `本次提醒组已有 ${count} 个项目`,
+      remove: "移除",
+      selectedLabel: "已选项目",
+      nextLabel: "提醒日期",
+      detailsLabel: "下一步填写",
+      detailHint: "只打开已选项目需要的资料，其他细节先收起。",
+      multiHint: "建立最终计划前，可先加入多个提醒。",
+      addHint: "同一组要提醒几个项目，就逐个点加入。"
+    };
+  }
+  return {
+    noSelection: "เลือกไอเท็มที่จะเตือนก่อนค่ะ",
+    added: "เพิ่มเข้าชุดแจ้งเตือนแล้ว",
+    empty: "ยังไม่มีรายการในชุดนี้ ถ้าจะตั้งหลายอย่างให้กด “เพิ่มรายการนี้” ก่อน",
+    count: (count) => `มี ${count} รายการในชุดแจ้งเตือนนี้`,
+    remove: "ลบ",
+    selectedLabel: "ไอเท็มที่เลือกอยู่",
+    nextLabel: "วันเวลาที่จะเตือน",
+    detailsLabel: "รายละเอียดที่จะเปิดให้ใส่",
+    detailHint: "ระบบจะเปิดเฉพาะข้อมูลที่จำเป็นของไอเท็มนี้ ส่วนรายละเอียดเสริมถูกพับเก็บไว้",
+    multiHint: "ตั้งหลายเรื่องพร้อมกันได้ ก่อนสร้างแผนรวม",
+    addHint: "ถ้าจะตั้งหลายรายการ ให้กดเพิ่มรายการนี้ทีละเรื่อง"
+  };
+}
+
+function getActivePresetText(nextCategory = category.value) {
+  if (nextCategory === "car") {
+    const preset = vehiclePresets.find((item) => item.key === selectedVehiclePresetKey) || vehiclePresets[0];
+    const text = preset?.text[currentLang] || preset?.text.th || {};
+    return {
+      icon: preset?.icon || "•",
+      title: text.title || "",
+      detail: text.detail || ""
+    };
+  }
+
+  const preset = getSelectedCategoryPreset(nextCategory);
+  const text = preset?.text[currentLang] || preset?.text.th || {};
+  return {
+    icon: preset?.icon || "•",
+    title: text.title || getTopicConfig(nextCategory).title,
+    detail: text.detail || getTopicConfig(nextCategory).placeholder
+  };
+}
+
+function syncTitleFromSelectedPreset() {
+  if (!category.value) return;
+  const active = getActivePresetText(category.value);
+  const title = document.querySelector("#reminderTitle");
+  if (title && active.title) title.value = active.title;
+}
+
+function selectedDateInsight(data) {
+  if (data.category === "car") {
+    const lastDate = selectedVehiclePresetKey === "oil"
+      ? (data.lastOilChange || data.lastService)
+      : data.lastService;
+    return buildVehicleDateInsight(lastDate, selectedVehiclePresetKey, vehicleLifecycleCopy().lastServiceEmpty);
+  }
+  const preset = getSelectedCategoryPreset(data.category);
+  return buildCategoryDateInsight(data.lastGenericAction, preset, categoryPresetUiCopy().latestDateEmpty);
+}
+
+function renderSelectedReminderSummary() {
+  if (!selectedReminderSummary) return;
+  if (!category.value) {
+    selectedReminderSummary.innerHTML = "";
+    return;
+  }
+
+  const data = readForm();
+  const copy = queueCopy();
+  const active = getActivePresetText(data.category);
+  const reminderAt = formatReminderDateTime(data.notifyDate, data.notifyTime || "09:00");
+  const detail = selectedDateInsight(data);
+
+  selectedReminderSummary.innerHTML = `
+    <div class="selected-reminder-head">
+      <span>${escapeHtml(active.icon)}</span>
+      <div>
+        <strong>${escapeHtml(copy.selectedLabel)}</strong>
+        <h3>${escapeHtml(data.reminderTitle || active.title)}</h3>
+      </div>
+    </div>
+    <div class="selected-reminder-grid">
+      <div>
+        <span>${escapeHtml(copy.nextLabel)}</span>
+        <strong>${escapeHtml(reminderAt)}</strong>
+      </div>
+      <div>
+        <span>${escapeHtml(copy.detailsLabel)}</span>
+        <strong>${escapeHtml(copy.detailHint)}</strong>
+      </div>
+    </div>
+    <p>${escapeHtml(detail)}</p>
+    <small>${escapeHtml(copy.multiHint)} · ${escapeHtml(copy.addHint)}</small>
+  `;
+}
+
+function buildQueuedReminderItem() {
+  const data = readForm();
+  if (!data.category) return null;
+  const risk = getRisk(data);
+  const plan = buildDefaultReminders(data, risk)[0];
+  return {
+    id: `reminder-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+    category: data.category,
+    title: plan.title,
+    due: plan.due,
+    time: plan.time || data.notifyTime,
+    detail: plan.detail,
+    tone: risk.tone
+  };
+}
+
+function renderReminderQueue() {
+  if (!reminderQueueList || !queueStatus) return;
+  const copy = queueCopy();
+  if (!reminderQueue.length) {
+    reminderQueueList.innerHTML = "";
+    queueStatus.textContent = copy.empty;
+    return;
+  }
+
+  queueStatus.textContent = copy.count(reminderQueue.length);
+  reminderQueueList.innerHTML = reminderQueue.map((item, index) => `
+    <article class="queue-item">
+      <span>${index + 1}</span>
+      <div>
+        <strong>${escapeHtml(item.title)}</strong>
+        <small>${escapeHtml(formatReminderDateTime(item.due, item.time || "09:00"))}</small>
+        <p>${escapeHtml(item.detail)}</p>
+      </div>
+      <button type="button" data-remove-reminder="${escapeHtml(item.id)}">${escapeHtml(copy.remove)}</button>
+    </article>
+  `).join("");
+}
+
+function addCurrentReminderToQueue() {
+  const item = buildQueuedReminderItem();
+  if (!item) {
+    showToast(queueCopy().noSelection);
+    return;
+  }
+  reminderQueue.push(item);
+  renderReminderQueue();
+  showToast(queueCopy().added);
 }
 
 function getRisk(data) {
@@ -2238,7 +2982,8 @@ function buildDefaultReminders(data, risk) {
       data.vehicleYear ? `${car.year} ${data.vehicleYear}` : "",
       data.mileage ? `${car.mileage} ${formatNumber(data.mileage)} ${car.mileageUnit}` : "",
       data.mileageNote ? `${car.mileage}: ${data.mileageNote}` : "",
-      data.lastOilChange ? `${car.lastOil} ${formatDate(new Date(data.lastOilChange))}` : "",
+      data.lastService ? `${car.lastService || "ทำล่าสุด"} ${formatDate(parseLocalDate(data.lastService))}` : "",
+      data.lastOilChange ? `${car.lastOil} ${formatDate(parseLocalDate(data.lastOilChange))}` : "",
       data.dashboardWarning ? `${car.warning}: ${data.dashboardWarning}` : "",
       data.workDone ? `${car.workDone}: ${data.workDone}` : "",
       data.handledStatus ? `${car.status}: ${data.handledStatus}` : ""
@@ -2266,6 +3011,7 @@ function buildDefaultReminders(data, risk) {
   if (data.category === "health") {
     const health = reminder.health;
     const healthContext = [
+      data.lastGenericAction ? `ทำล่าสุด ${formatDate(parseLocalDate(data.lastGenericAction))}` : "",
       data.illnessStartYear ? `${health.startYear} ${data.illnessStartYear}` : "",
       data.currentMedicine ? `${health.currentMedicine}: ${data.currentMedicine}` : "",
       data.doctorVisit ? `${health.doctorVisit}: ${data.doctorVisit}` : "",
@@ -2287,8 +3033,14 @@ function buildDefaultReminders(data, risk) {
   }
 
   const [title, fallback] = reminder.categories[data.category] || reminder.categories.default;
+  const genericContext = [
+    data.lastGenericAction ? `ทำล่าสุด ${formatDate(parseLocalDate(data.lastGenericAction))}` : "",
+    data.workDone ? `รายละเอียด: ${data.workDone}` : "",
+    data.handledStatus ? `สถานะ: ${data.handledStatus}` : ""
+  ].filter(Boolean).join(" · ");
+  const genericDetail = data.checks.length ? `${reminder.trackPrefix}: ${checked}` : fallback;
   return [
-    { title: data.reminderTitle || title, due: primaryDue, time: data.notifyTime, detail: data.checks.length ? `${reminder.trackPrefix}: ${checked}` : fallback },
+    { title: data.reminderTitle || title, due: primaryDue, time: data.notifyTime, detail: `${genericDetail}${genericContext ? " · " + genericContext : ""}` },
     { title: reminder.followUpTitle, due: addDays(30), detail: reminder.followUpDetail }
   ];
 }
@@ -2451,7 +3203,8 @@ function renderNotificationPolicy() {
 function evaluate() {
   const data = readForm();
   const risk = getRisk(data);
-  reminders = buildDefaultReminders(data, risk);
+  const currentPlan = buildDefaultReminders(data, risk);
+  reminders = reminderQueue.length ? [...reminderQueue] : currentPlan;
   renderRisk(risk);
   renderTimeline();
   renderAlertSummary(data, risk);
@@ -2480,74 +3233,122 @@ function renderDynamicFields(nextCategory) {
   if (nextCategory === "car") {
     const car = runtime.dynamic.car;
     dynamicFields.innerHTML = `
-      <div class="field-grid">
+      <details class="advanced-details category-advanced">
+        <summary>${escapeHtml(categoryPresetUiCopy().advancedTitle)}</summary>
+        <div class="field-grid">
+          <label>
+            ${escapeHtml(car.workDoneLabel)}
+            <input id="workDone" type="text" placeholder="${escapeHtml(car.workDonePlaceholder)}">
+          </label>
+          <label>
+            ${escapeHtml(car.handledLabel)}
+            <select id="handledStatus">
+              ${car.handledOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
+            </select>
+          </label>
+        </div>
         <label>
-          ${escapeHtml(car.workDoneLabel)}
-          <input id="workDone" type="text" placeholder="${escapeHtml(car.workDonePlaceholder)}">
-        </label>
-        <label>
-          ${escapeHtml(car.handledLabel)}
-          <select id="handledStatus">
-            ${car.handledOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
+          ${escapeHtml(car.warningLabel)}
+          <select id="dashboardWarning">
+            ${car.warningOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
           </select>
         </label>
-      </div>
-      <label>
-        ${escapeHtml(car.warningLabel)}
-        <select id="dashboardWarning">
-          ${car.warningOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
-        </select>
-      </label>
-      <div class="guide-card">
-        <p class="quick-checks-title">${escapeHtml(car.guideTitle)}</p>
-        ${car.guide.map((item) => `<div><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.interval)}</span></div>`).join("")}
-      </div>
+        <div class="guide-card">
+          <p class="quick-checks-title">${escapeHtml(car.guideTitle)}</p>
+          ${car.guide.map((item) => `<div><strong>${escapeHtml(item.label)}</strong><span>${escapeHtml(item.interval)}</span></div>`).join("")}
+        </div>
+      </details>
     `;
     return;
   }
 
   if (nextCategory === "health") {
     const health = runtime.dynamic.health;
+    const copy = categoryPresetUiCopy();
     dynamicFields.innerHTML = `
+      <div class="category-smart-panel" id="categoryPresetPanel"></div>
       <div class="field-grid">
         <label>
-          ${escapeHtml(health.startYearLabel)}
-          <input id="illnessStartYear" type="number" min="1950" max="2035" placeholder="${escapeHtml(health.startYearPlaceholder)}">
+          ${escapeHtml(copy.latestDateLabel)}
+          <input id="lastGenericAction" type="date">
+          <small id="lastGenericActionAge" class="date-age-summary">${escapeHtml(copy.latestDateEmpty)}</small>
         </label>
         <label>
           ${escapeHtml(health.doctorVisitLabel)}
-          <input id="doctorVisit" type="text" inputmode="numeric" autocomplete="off" placeholder="YYYY-MM-DD">
+          <input id="doctorVisit" type="date">
+          <small>${escapeHtml((currentLang === "en" && "Use the next appointment date if you know it.") || (currentLang === "zh" && "若知道下次预约日期，请填写。") || "ถ้ารู้วันนัดครั้งถัดไป ให้ใส่วันที่นั้น")}</small>
         </label>
       </div>
-      <label>
-        ${escapeHtml(health.currentMedicineLabel)}
-        <input id="currentMedicine" type="text" placeholder="${escapeHtml(health.currentMedicinePlaceholder)}">
-      </label>
-      <label>
-        ${escapeHtml(health.medicineStatusLabel)}
-        <select id="medicineStatus">
-          ${health.medicineStatusOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
-        </select>
-      </label>
+      <div class="date-quick-panel compact">
+        <span class="mini-label">${escapeHtml(copy.quickDateLabel)}</span>
+        <div class="choice-chip-row" id="lastGenericActionChips"></div>
+      </div>
+      <details class="advanced-details category-advanced">
+        <summary>${escapeHtml(copy.advancedTitle)}</summary>
+        <div class="field-grid">
+          <label>
+            ${escapeHtml(health.startYearLabel)}
+            <input id="illnessStartYear" type="number" min="1950" max="2035" placeholder="${escapeHtml(health.startYearPlaceholder)}">
+          </label>
+          <label>
+            ${escapeHtml(health.medicineStatusLabel)}
+            <select id="medicineStatus">
+              ${health.medicineStatusOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
+            </select>
+          </label>
+        </div>
+        <label>
+          ${escapeHtml(health.currentMedicineLabel)}
+          <input id="currentMedicine" type="text" placeholder="${escapeHtml(health.currentMedicinePlaceholder)}">
+        </label>
+      </details>
     `;
+    renderCategoryPresetPanel(nextCategory);
+    renderGenericDateShortcuts();
+    document.querySelector("#lastGenericAction")?.addEventListener("input", () => {
+      renderGenericDateShortcuts();
+      renderCategoryPresetPanel(nextCategory);
+    });
     return;
   }
 
   const generic = runtime.dynamic.generic;
+  const copy = categoryPresetUiCopy();
   dynamicFields.innerHTML = `
-    <div class="field-grid">
+    <div class="category-smart-panel" id="categoryPresetPanel"></div>
+    <div class="field-grid single-field">
       <label>
-        ${escapeHtml(generic.startLabel)}
-        <input id="workDone" type="text" placeholder="${escapeHtml(generic.startPlaceholder)}">
-      </label>
-      <label>
-        ${escapeHtml(generic.handledLabel)}
-        <select id="handledStatus">
-          ${generic.handledOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
-        </select>
+        ${escapeHtml(copy.latestDateLabel)}
+        <input id="lastGenericAction" type="date">
+        <small id="lastGenericActionAge" class="date-age-summary">${escapeHtml(copy.latestDateEmpty)}</small>
       </label>
     </div>
+    <div class="date-quick-panel compact">
+      <span class="mini-label">${escapeHtml(copy.quickDateLabel)}</span>
+      <div class="choice-chip-row" id="lastGenericActionChips"></div>
+    </div>
+    <details class="advanced-details category-advanced">
+      <summary>${escapeHtml(copy.advancedTitle)}</summary>
+      <div class="field-grid">
+        <label>
+          ${escapeHtml(generic.startLabel)}
+          <input id="workDone" type="text" placeholder="${escapeHtml(generic.startPlaceholder)}">
+        </label>
+        <label>
+          ${escapeHtml(generic.handledLabel)}
+          <select id="handledStatus">
+            ${generic.handledOptions.map((item) => `<option>${escapeHtml(item)}</option>`).join("")}
+          </select>
+        </label>
+      </div>
+    </details>
   `;
+  renderCategoryPresetPanel(nextCategory);
+  renderGenericDateShortcuts();
+  document.querySelector("#lastGenericAction")?.addEventListener("input", () => {
+    renderGenericDateShortcuts();
+    renderCategoryPresetPanel(nextCategory);
+  });
 }
 
 function setCategory(nextCategory) {
@@ -2556,11 +3357,15 @@ function setCategory(nextCategory) {
   questionnaireTitle.textContent = config.title;
   document.querySelector("#symptoms").value = "";
   document.querySelector("#symptoms").placeholder = config.placeholder;
+  updateReminderTitlePlaceholder();
   vehicleFields.style.display = nextCategory === "car" ? "grid" : "none";
   topicCards.forEach((card) => card.classList.toggle("is-active", card.dataset.category === nextCategory));
-  renderDynamicFields(nextCategory);
   renderChecks(nextCategory);
+  renderDynamicFields(nextCategory);
+  applyDatePlaceholders();
   if (nextCategory === "car") renderVehicleAssistControls();
+  renderSelectedReminderSummary();
+  renderReminderQueue();
   notificationState = { acknowledgedToday: false, rescheduledDate: "", rescheduledTime: "" };
   rescheduleDate.value = "";
   rescheduleTime.value = "09:00";
@@ -2638,6 +3443,16 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   evaluate();
+});
+
+addReminderItem?.addEventListener("click", addCurrentReminderToQueue);
+
+reminderQueueList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-remove-reminder]");
+  if (!button) return;
+  const id = button.getAttribute("data-remove-reminder");
+  reminderQueue = reminderQueue.filter((item) => item.id !== id);
+  renderReminderQueue();
 });
 
 registerForm.addEventListener("submit", (event) => {
@@ -2749,10 +3564,17 @@ vehicleBrand?.addEventListener("change", () => {
 });
 vehicleModel?.addEventListener("input", updateVehicleModelOptions);
 document.querySelector("#vehicleYear")?.addEventListener("input", renderVehicleYearChips);
-document.querySelector("#mileage")?.addEventListener("input", renderMileageChips);
+document.querySelector("#mileage")?.addEventListener("input", () => {
+  renderMileageChips();
+  renderSelectedReminderSummary();
+});
 document.querySelector("#lastService")?.addEventListener("input", renderVehicleDateShortcuts);
 document.querySelector("#lastOilChange")?.addEventListener("input", renderVehicleDateShortcuts);
-document.querySelector("#notifyDate")?.addEventListener("input", renderMainDateShortcuts);
+document.querySelector("#notifyDate")?.addEventListener("input", () => {
+  renderMainDateShortcuts();
+  renderSelectedReminderSummary();
+});
+document.querySelector("#notifyTime")?.addEventListener("input", renderSelectedReminderSummary);
 document.querySelector("#rescheduleDate")?.addEventListener("input", renderMainDateShortcuts);
 vehicleFields.style.display = "none";
 messagePreview.value = "";

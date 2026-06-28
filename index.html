@@ -487,72 +487,32 @@
         <div class="panel-heading">
           <span class="step">1</span>
           <div>
-            <p class="eyebrow small">QUESTIONNAIRE</p>
+            <p class="eyebrow small">REMINDER</p>
             <h2 id="questionnaireTitle">เลือกเรื่องที่ต้องการก่อน</h2>
           </div>
         </div>
 
-        <div class="field-grid">
-          <label>
-            ชื่อผู้รับแจ้งเตือน
-            <input id="customerName" type="text" autocomplete="name" placeholder="ชื่อที่ต้องการให้ระบบเรียก">
-            <small>ใช้สำหรับขึ้นต้นข้อความแจ้งเตือน</small>
-          </label>
-          <label>
-            เบอร์โทร
-            <input id="phone" type="tel" autocomplete="tel" placeholder="ใช้รับ SMS ในอนาคต">
-            <small>เวอร์ชันร่างยังไม่ส่ง SMS จริง</small>
-          </label>
-        </div>
-
-        <div class="field-grid">
-          <label>
-            LINE ID
-            <input id="lineId" type="text" autocomplete="off" placeholder="เช่น deathlessomg">
-            <small>ใช้ระบุปลายทาง LINE สำหรับร่างแจ้งเตือนนี้ ยังไม่ส่งจริง</small>
-          </label>
-          <label>
-            วันที่แจ้งเตือน
-            <input id="notifyDate" type="date">
-            <small>ถ้าเว้นไว้ ระบบจะใช้วันนี้</small>
-          </label>
-        </div>
-        <div class="date-quick-panel">
-          <span class="mini-label">วันที่แจ้งเตือนแบบเร็ว</span>
-          <div class="choice-chip-row" id="notifyDateChips"></div>
-        </div>
-
-        <label>
-          เรื่องที่ต้องการเตือน
-          <input id="reminderTitle" type="text" placeholder="เช่น แจ้งเตือนกินยา">
-          <small>หัวข้อนี้จะแสดงบนหน้าบัตรแจ้งเตือนให้ตรวจสอบก่อนใช้งานจริง</small>
-        </label>
-
-        <div class="field-grid">
-          <label>
-            ช่องทางแจ้งเตือน
-            <select id="channel">
-              <option>SMS</option>
-              <option>LINE</option>
-              <option>SMS + LINE</option>
-            </select>
-            <small>เลือกช่องทางหลักที่อยากให้ระบบเตือน</small>
-          </label>
-          <label>
-            เวลาที่สะดวกรับเตือน
-            <input id="notifyTime" type="time" value="09:00">
-            <small>แนะนำช่วงที่เห็นข้อความง่าย</small>
-          </label>
+        <input id="reminderTitle" type="hidden" value="">
+        <div class="mobile-flow-note">
+          <strong>เริ่มจากจิ้มเลือกประเภทงานก่อน</strong>
+          <span>เลือกไอเท็มด้านล่าง แล้วรายละเอียดที่จำเป็นจะค่อยเปิดให้ใส่ทีละส่วน เหมือนใช้งานในมือถือ</span>
         </div>
 
         <div class="category-fields" id="vehicleFields">
+          <div class="vehicle-smart-panel" id="vehicleSmartPanel">
+            <div class="smart-panel-head">
+              <span>เลือกงานที่ต้องการเตือนก่อน</span>
+              <small>เลื่อนซ้ายขวาแบบมือถือ แตะหนึ่งเรื่อง แล้วรายละเอียดที่จำเป็นจะเปิดถัดลงมา</small>
+            </div>
+            <div class="vehicle-preset-grid" id="vehiclePresetChips"></div>
+          </div>
           <div class="field-grid">
             <label>
               ยี่ห้อรถ
               <select id="vehicleBrand">
                 <option value="">เลือกยี่ห้อรถ</option>
               </select>
-              <small>เลือกยี่ห้อก่อน ระบบจะแนะนำรุ่นที่พบบ่อยให้</small>
+              <small>ไม่บังคับ ใช้ช่วยระบุรถให้ชัดขึ้นเท่านั้น</small>
             </label>
             <label>
               รุ่นรถ
@@ -564,13 +524,6 @@
           <div class="vehicle-helper" id="vehicleHelper">
             <strong>ถ้าไม่มีรุ่นในรายการ</strong>
             <span>พิมพ์ชื่อรุ่นเท่าที่ทราบได้เลย ทีมงานจะค้นรุ่นให้ก่อนจัดรอบแจ้งเตือนจริง</span>
-          </div>
-          <div class="vehicle-smart-panel" id="vehicleSmartPanel">
-            <div class="smart-panel-head">
-              <span>เลือกงานรถแบบเร็ว</span>
-              <small>แตะหนึ่งครั้งให้ระบบเติมหัวข้อ รายละเอียด และเช็กลิสต์ให้เอง</small>
-            </div>
-            <div class="vehicle-preset-grid" id="vehiclePresetChips"></div>
           </div>
           <div class="vehicle-picker-app" aria-label="เลือกข้อมูลรถแบบเร็ว">
             <div>
@@ -594,12 +547,12 @@
               <small>ช่วยแนะนำรอบเปลี่ยนตามกิโล</small>
             </label>
           </div>
-          <div class="vehicle-quick-row">
-            <div class="vehicle-mini-picker">
+          <div class="vehicle-quick-row vehicle-meta-shortcuts">
+            <div class="vehicle-mini-picker year-picker-panel">
               <span class="mini-label">ปีรถแบบเร็ว</span>
               <div class="choice-chip-row" id="vehicleYearChips"></div>
             </div>
-            <div class="vehicle-mini-picker">
+            <div class="vehicle-mini-picker mileage-picker-panel">
               <span class="mini-label">เลขไมล์แบบเร็ว</span>
               <div class="choice-chip-row" id="mileageChips"></div>
               <input id="mileageNote" class="inline-free-input" type="text" placeholder="ถ้าเลขไมล์ไม่ตรง เช่น ประมาณ 83,500 กม.">
@@ -618,19 +571,19 @@
           </div>
           <div class="field-grid">
             <label>
-              เช็กล่าสุด
+              ทำรายการนี้ล่าสุดเมื่อไร
               <input id="lastService" type="date">
-              <small>ถ้าไม่แน่ใจเว้นไว้ได้</small>
+              <small id="lastServiceAge" class="date-age-summary">เลือกวันที่เพื่อดูว่าผ่านมาแล้วเท่าไร</small>
             </label>
             <label>
               ถ่ายน้ำมันเครื่องล่าสุด
               <input id="lastOilChange" type="date">
-              <small>ใช้คำนวณรอบเตือนครั้งถัดไป</small>
+              <small id="lastOilChangeAge" class="date-age-summary">ถ้าไม่ใช่งานน้ำมันเครื่อง เว้นไว้ได้</small>
             </label>
           </div>
-          <div class="vehicle-quick-row">
+          <div class="vehicle-quick-row vehicle-history-shortcuts">
             <div class="vehicle-mini-picker">
-              <span class="mini-label">เช็กล่าสุดแบบเร็ว</span>
+              <span class="mini-label">ทำล่าสุดแบบเร็ว</span>
               <div class="choice-chip-row" id="lastServiceChips"></div>
             </div>
             <div class="vehicle-mini-picker">
@@ -643,29 +596,96 @@
         <div class="category-fields" id="dynamicFields"></div>
         <div class="quick-checks" id="quickChecks"></div>
 
-        <label>
-          รายละเอียดเพิ่มเติม
-          <textarea id="symptoms" rows="4" placeholder="เล่าอาการ สิ่งที่กังวล หรือสิ่งที่อยากให้เตือน"></textarea>
-          <small id="symptomHint">กรอกเท่าที่จำเป็น ไม่ต้องใส่ข้อมูลอ่อนไหวเกินจำเป็น</small>
-        </label>
+        <article class="selected-reminder-card" id="selectedReminderSummary" aria-live="polite"></article>
 
-        <div class="field-grid">
+        <div class="field-grid notify-schedule">
           <label>
-            ความถี่ของปัญหา
-            <select id="frequency">
-              <option value="once">ครั้งเดียว</option>
-              <option value="sometimes">บางครั้ง</option>
-              <option value="often">บ่อย</option>
-              <option value="always">ทุกครั้ง</option>
-            </select>
-            <small>ช่วยประเมินว่าควรเตือนเร็วแค่ไหน</small>
+            วันที่แจ้งเตือน
+            <input id="notifyDate" type="date">
+            <small>ถ้าเว้นไว้ ระบบจะใช้วันนี้</small>
           </label>
           <label>
-            ระดับความสำคัญ
-            <input id="severity" type="range" min="1" max="5" value="3">
-            <span id="severityValue" class="range-value">3</span>
+            เวลาที่สะดวกรับเตือน
+            <input id="notifyTime" type="time" value="09:00">
+            <small>แนะนำช่วงที่เห็นข้อความง่าย</small>
           </label>
         </div>
+        <div class="date-quick-panel notify-date-shortcuts">
+          <span class="mini-label">วันที่แจ้งเตือนแบบเร็ว</span>
+          <div class="choice-chip-row" id="notifyDateChips"></div>
+        </div>
+
+        <details class="advanced-details">
+          <summary>รายละเอียดเพิ่มเติม ถ้าจำเป็น</summary>
+          <label>
+            รายละเอียดเพิ่มเติม
+            <textarea id="symptoms" rows="4" placeholder="เล่าอาการ สิ่งที่กังวล หรือสิ่งที่อยากให้เตือน"></textarea>
+            <small id="symptomHint">กรอกเท่าที่จำเป็น ไม่ต้องใส่ข้อมูลอ่อนไหวเกินจำเป็น</small>
+          </label>
+
+          <div class="field-grid">
+            <label>
+              ความถี่ของปัญหา
+              <select id="frequency">
+                <option value="once">ครั้งเดียว</option>
+                <option value="sometimes">บางครั้ง</option>
+                <option value="often">บ่อย</option>
+                <option value="always">ทุกครั้ง</option>
+              </select>
+              <small>ช่วยประเมินว่าควรเตือนเร็วแค่ไหน</small>
+            </label>
+            <label>
+              ระดับความสำคัญ
+              <input id="severity" type="range" min="1" max="5" value="3">
+              <span id="severityValue" class="range-value">3</span>
+            </label>
+          </div>
+        </details>
+
+        <details class="advanced-details contact-details" open>
+          <summary>ช่องทางรับแจ้งเตือน</summary>
+          <div class="field-grid">
+            <label>
+              ชื่อผู้รับแจ้งเตือน
+              <input id="customerName" type="text" autocomplete="name" placeholder="ชื่อที่ต้องการให้ระบบเรียก">
+              <small>ใช้สำหรับขึ้นต้นข้อความแจ้งเตือน</small>
+            </label>
+            <label>
+              เบอร์โทร
+              <input id="phone" type="tel" autocomplete="tel" placeholder="ใช้รับ SMS ในอนาคต">
+              <small>เวอร์ชันร่างยังไม่ส่ง SMS จริง</small>
+            </label>
+          </div>
+          <div class="field-grid">
+            <label>
+              LINE ID
+              <input id="lineId" type="text" autocomplete="off" placeholder="เช่น deathlessomg">
+              <small>ใช้ระบุปลายทาง LINE สำหรับร่างแจ้งเตือนนี้ ยังไม่ส่งจริง</small>
+            </label>
+            <label>
+              ช่องทางแจ้งเตือน
+              <select id="channel">
+                <option>SMS</option>
+                <option>LINE</option>
+                <option>SMS + LINE</option>
+              </select>
+              <small>เลือกช่องทางหลักที่อยากให้ระบบเตือน</small>
+            </label>
+          </div>
+        </details>
+
+        <section class="reminder-basket" id="reminderBasket" aria-live="polite">
+          <div class="basket-head">
+            <div>
+              <span class="basket-kicker">ตั้งหลายรายการได้</span>
+              <h3>รายการแจ้งเตือนที่จะสร้าง</h3>
+              <p>ลูกค้าอาจต้องตั้งหลายเรื่องพร้อมกัน เช่น ถ่ายน้ำมัน ต่อภาษี นัดหมอ และจ่ายบิล ให้กดเพิ่มทีละรายการก่อนสร้างแผนรวม</p>
+            </div>
+            <button id="addReminderItem" class="secondary-button" type="button">เพิ่มรายการนี้</button>
+          </div>
+          <div class="reminder-queue-list" id="reminderQueueList"></div>
+          <p class="form-note" id="queueStatus">ยังไม่มีรายการในชุดนี้ ถ้าจะตั้งหลายอย่างให้กด “เพิ่มรายการนี้” ก่อน</p>
+        </section>
 
         <div class="consent-card">
           <label class="checkbox-row">
