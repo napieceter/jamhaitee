@@ -67,6 +67,7 @@ const adminLogout = document.querySelector("#adminLogout");
 const serviceChart = document.querySelector("#serviceChart");
 const requestChart = document.querySelector("#requestChart");
 const languageButtons = Array.from(document.querySelectorAll(".language-option"));
+let themeButtons = [];
 const richMenuButtons = Array.from(document.querySelectorAll(".rich-menu-preview button"));
 const actionToast = document.createElement("div");
 actionToast.className = "action-toast";
@@ -86,6 +87,8 @@ let selectedCategoryPresetKeys = {
 };
 const usageCountKey = "jamhaitee-demo-use-count";
 const feedbackKey = "jamhaitee-feedback-draft";
+const skyModeKey = "jamhaitee-sky-mode";
+let skyThemeTimer;
 const mileagePresetValues = [0, 5000, 10000, 20000, 30000, 50000, 80000, 100000, 150000, 200000];
 const dateShortcutDays = [0, 1, 7, 30, 90, 180, 365, 730];
 const futureDateShortcutDays = [0, 1, 3, 7, 14, 30];
@@ -1675,6 +1678,68 @@ function getSafeStorage(key, fallback = "") {
     return localStorage.getItem(key) || fallback;
   } catch {
     return fallback;
+  }
+}
+
+function getAutoSkyTheme() {
+  const hour = new Date().getHours();
+  return hour >= 6 && hour < 18 ? "day" : "night";
+}
+
+function resolveSkyTheme(mode) {
+  if (mode === "day" || mode === "night") return mode;
+  return getAutoSkyTheme();
+}
+
+function getRequestedSkyMode() {
+  try {
+    const mode = new URLSearchParams(window.location.search).get("theme");
+    return ["auto", "day", "night"].includes(mode) ? mode : "";
+  } catch {
+    return "";
+  }
+}
+
+function ensureThemeSwitcher() {
+  const existing = document.querySelector(".theme-switcher");
+  if (!existing) {
+    const languageSwitcher = document.querySelector(".language-switcher");
+    const topbar = document.querySelector(".topbar");
+    const switcher = document.createElement("div");
+    switcher.className = "theme-switcher";
+    switcher.setAttribute("aria-label", "Choose atmosphere");
+    switcher.innerHTML = `
+      <button class="theme-option" type="button" data-sky-mode="auto">Auto</button>
+      <button class="theme-option" type="button" data-sky-mode="day">Day</button>
+      <button class="theme-option" type="button" data-sky-mode="night">Night</button>
+    `;
+    if (languageSwitcher) {
+      languageSwitcher.insertAdjacentElement("afterend", switcher);
+    } else if (topbar) {
+      topbar.appendChild(switcher);
+    }
+  }
+  themeButtons = Array.from(document.querySelectorAll(".theme-option"));
+  return themeButtons;
+}
+
+function applySkyMode(nextMode = "auto") {
+  const mode = ["auto", "day", "night"].includes(nextMode) ? nextMode : "auto";
+  const theme = resolveSkyTheme(mode);
+  document.body.dataset.skyMode = mode;
+  document.body.dataset.skyTheme = theme;
+  document.documentElement.style.colorScheme = theme === "night" ? "dark" : "light";
+  setSafeStorage(skyModeKey, mode);
+  ensureThemeSwitcher().forEach((button) => {
+    const isActive = button.dataset.skyMode === mode;
+    button.classList.toggle("is-active", isActive);
+    button.setAttribute("aria-pressed", isActive ? "true" : "false");
+  });
+  if (skyThemeTimer) clearInterval(skyThemeTimer);
+  if (mode === "auto") {
+    skyThemeTimer = setInterval(() => {
+      document.body.dataset.skyTheme = getAutoSkyTheme();
+    }, 300000);
   }
 }
 
@@ -3417,6 +3482,10 @@ languageButtons.forEach((button) => {
   button.addEventListener("click", () => applyLanguage(button.dataset.lang));
 });
 
+ensureThemeSwitcher().forEach((button) => {
+  button.addEventListener("click", () => applySkyMode(button.dataset.skyMode));
+});
+
 const richMenuActions = ["create", "status", "expert", "reschedule", "plans", "support"];
 richMenuButtons.forEach((button, index) => {
   button.addEventListener("click", () => {
@@ -3582,4 +3651,5 @@ const notifyDateInput = document.querySelector("#notifyDate");
 if (notifyDateInput && !notifyDateInput.value) notifyDateInput.value = toDateInputValue();
 const channelInput = document.querySelector("#channel");
 if (channelInput) channelInput.selectedIndex = 1;
+applySkyMode(getRequestedSkyMode() || getSafeStorage(skyModeKey, "auto"));
 applyLanguage(currentLang);

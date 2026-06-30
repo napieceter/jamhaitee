@@ -3220,3 +3220,418 @@ textarea:focus {
     inset: 12px auto auto 12px;
   }
 }
+
+/* Cinematic day/night atmosphere */
+body[data-sky-theme="day"] {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(255, 210, 105, 0.34), transparent 24%),
+    radial-gradient(circle at 88% 14%, rgba(125, 211, 252, 0.26), transparent 28%),
+    linear-gradient(135deg, #f8fbff 0%, #eef9f6 48%, #fff6e6 100%);
+}
+
+body[data-sky-theme="night"] {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(96, 165, 250, 0.14), transparent 28%),
+    radial-gradient(circle at 76% 6%, rgba(167, 139, 250, 0.13), transparent 24%),
+    linear-gradient(135deg, #07111f 0%, #0f1f33 50%, #111827 100%);
+}
+
+.sun-orb,
+.day-cloud,
+.wind-leaf,
+.wind-tree,
+.aurora {
+  position: absolute;
+  pointer-events: none;
+}
+
+.sun-orb {
+  top: 7%;
+  left: 9%;
+  width: clamp(110px, 16vw, 190px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 38% 35%, #fff8d7 0 18%, #ffd66e 45%, rgba(255, 168, 63, 0.72) 68%, transparent 70%);
+  box-shadow:
+    0 0 42px rgba(255, 206, 98, 0.46),
+    0 0 110px rgba(255, 205, 108, 0.28);
+  animation: sunGlow 6.5s ease-in-out infinite;
+}
+
+.day-cloud {
+  width: clamp(150px, 24vw, 280px);
+  height: 58px;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 18% 52%, rgba(255, 255, 255, 0.95) 0 24%, transparent 25%),
+    radial-gradient(circle at 42% 36%, rgba(255, 255, 255, 0.9) 0 34%, transparent 35%),
+    radial-gradient(circle at 72% 54%, rgba(255, 255, 255, 0.82) 0 28%, transparent 29%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.78), rgba(255, 255, 255, 0.36));
+  filter: blur(0.2px);
+  opacity: 0.68;
+  animation: cloudFloat 24s ease-in-out infinite;
+}
+
+.cloud-a {
+  top: 11%;
+  left: 35%;
+}
+
+.cloud-b {
+  top: 30%;
+  right: 7%;
+  width: clamp(110px, 18vw, 220px);
+  opacity: 0.46;
+  animation-delay: -10s;
+  animation-duration: 30s;
+}
+
+.wind-leaf {
+  width: 16px;
+  height: 9px;
+  border-radius: 100% 0 100% 0;
+  background: linear-gradient(135deg, #22c55e, #0f766e);
+  box-shadow: 0 10px 22px rgba(15, 118, 110, 0.2);
+  opacity: 0.58;
+  animation: leafDrift 14s ease-in-out infinite;
+}
+
+.leaf-a { left: 16%; top: 62%; animation-delay: -2s; }
+.leaf-b { left: 44%; top: 78%; animation-delay: -6s; }
+.leaf-c { right: 12%; top: 58%; animation-delay: -9s; }
+
+.wind-tree {
+  bottom: -14px;
+  width: 72px;
+  height: 128px;
+  transform-origin: 50% 100%;
+  animation: treeSway 5.8s ease-in-out infinite;
+  opacity: 0.56;
+}
+
+.wind-tree::before {
+  content: "";
+  position: absolute;
+  left: 34px;
+  bottom: 0;
+  width: 8px;
+  height: 88px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8b5e34, #5c3b23);
+}
+
+.wind-tree span {
+  position: absolute;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #34d399, #15803d);
+  box-shadow: 0 10px 28px rgba(21, 128, 61, 0.18);
+}
+
+.wind-tree span:nth-child(1) { width: 58px; height: 58px; left: 6px; top: 8px; }
+.wind-tree span:nth-child(2) { width: 66px; height: 66px; left: 0; top: 36px; }
+.wind-tree span:nth-child(3) { width: 52px; height: 52px; left: 24px; top: 30px; }
+
+.tree-a { left: 2%; }
+.tree-b {
+  right: 2%;
+  transform: scale(0.86);
+  animation-delay: -2.6s;
+}
+
+.aurora {
+  top: 8%;
+  left: -10%;
+  width: 122vw;
+  height: 46vh;
+  border-radius: 50%;
+  filter: blur(18px);
+  opacity: 0;
+  mix-blend-mode: screen;
+  transform: rotate(-7deg);
+}
+
+.aurora-a {
+  background: linear-gradient(90deg, transparent, rgba(52, 211, 153, 0.32), rgba(56, 189, 248, 0.22), transparent);
+  animation: auroraWave 10s ease-in-out infinite;
+}
+
+.aurora-b {
+  top: 18%;
+  background: linear-gradient(90deg, transparent, rgba(167, 139, 250, 0.18), rgba(34, 211, 238, 0.22), transparent);
+  animation: auroraWave 13s ease-in-out infinite reverse;
+}
+
+body[data-sky-theme="day"] .aurora,
+body[data-sky-theme="day"] .shooting-star {
+  opacity: 0;
+  animation-play-state: paused;
+}
+
+body[data-sky-theme="day"] .sky-motion::before {
+  opacity: 0;
+}
+
+body[data-sky-theme="day"] .sky-motion::after {
+  opacity: 0.22;
+}
+
+body[data-sky-theme="night"] .sun-orb,
+body[data-sky-theme="night"] .day-cloud,
+body[data-sky-theme="night"] .wind-leaf,
+body[data-sky-theme="night"] .wind-tree {
+  opacity: 0;
+  animation-play-state: paused;
+}
+
+body[data-sky-theme="night"] .aurora {
+  opacity: 0.82;
+}
+
+body[data-sky-theme="night"] .shooting-star {
+  opacity: 0;
+  animation-play-state: running;
+}
+
+body[data-sky-theme="night"] .sky-motion::before {
+  opacity: 0.92;
+}
+
+body[data-sky-theme="night"] .sky-motion::after {
+  opacity: 0.9;
+  box-shadow:
+    12vw 9vh 0 -3px rgba(255, 255, 255, 0.78),
+    22vw 13vh 0 -2px rgba(185, 142, 75, 0.62),
+    34vw 2vh 0 -4px rgba(255, 255, 255, 0.72),
+    42vw -7vh 0 -3px rgba(56, 189, 248, 0.72),
+    54vw 21vh 0 -4px rgba(255, 255, 255, 0.6),
+    66vw 26vh 0 -2px rgba(255, 255, 255, 0.84),
+    78vw 4vh 0 -3px rgba(52, 211, 153, 0.68),
+    88vw 31vh 0 -4px rgba(167, 139, 250, 0.72);
+}
+
+body[data-sky-theme="day"] .hero {
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.98) 0%, rgba(239, 253, 246, 0.93) 48%, rgba(255, 246, 230, 0.94) 100%);
+}
+
+body[data-sky-theme="night"] .hero {
+  border-color: rgba(147, 197, 253, 0.18);
+  background:
+    radial-gradient(circle at 78% 20%, rgba(56, 189, 248, 0.18), transparent 30%),
+    linear-gradient(130deg, rgba(15, 23, 42, 0.96), rgba(15, 31, 51, 0.94));
+  color: #f8fafc;
+}
+
+body[data-sky-theme="night"] .hero h1,
+body[data-sky-theme="night"] .hero-copy,
+body[data-sky-theme="night"] .hero .eyebrow {
+  color: #f8fafc;
+}
+
+body[data-sky-theme="night"] .hero-copy {
+  color: rgba(226, 232, 240, 0.88);
+}
+
+body[data-sky-theme="night"] .topbar {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.78);
+}
+
+body[data-sky-theme="night"] .brand,
+body[data-sky-theme="night"] .top-actions a {
+  color: #f8fafc;
+}
+
+body[data-sky-theme="night"] .brand-kicker,
+body[data-sky-theme="night"] .top-actions a:not(.nav-button) {
+  color: rgba(226, 232, 240, 0.76);
+}
+
+.theme-switcher {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 4px;
+  border: 1px solid rgba(15, 23, 42, 0.09);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.theme-option {
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #334155;
+  font: inherit;
+  font-weight: 800;
+  font-size: 12px;
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.theme-option.is-active {
+  background: linear-gradient(135deg, #0f172a, #1d4ed8);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.22);
+}
+
+body[data-sky-theme="night"] .theme-switcher,
+body[data-sky-theme="night"] .language-switcher {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.7);
+}
+
+body[data-sky-theme="night"] .theme-option {
+  color: rgba(226, 232, 240, 0.78);
+}
+
+body[data-sky-theme="night"] .theme-option.is-active {
+  background: linear-gradient(135deg, #22d3ee, #7c3aed);
+  color: #fff;
+}
+
+@keyframes sunGlow {
+  0%, 100% { transform: scale(1); filter: saturate(1); }
+  50% { transform: scale(1.04); filter: saturate(1.12); }
+}
+
+@keyframes cloudFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(26px, -8px, 0); }
+}
+
+@keyframes leafDrift {
+  0% { transform: translate3d(0, 0, 0) rotate(18deg); opacity: 0; }
+  12% { opacity: 0.58; }
+  54% { opacity: 0.5; }
+  100% { transform: translate3d(38vw, -20vh, 0) rotate(190deg); opacity: 0; }
+}
+
+@keyframes treeSway {
+  0%, 100% { transform: rotate(-1.5deg); }
+  50% { transform: rotate(2.2deg); }
+}
+
+@keyframes auroraWave {
+  0%, 100% { transform: translate3d(-4%, 0, 0) rotate(-7deg) scaleY(0.9); filter: blur(20px); }
+  50% { transform: translate3d(4%, -2vh, 0) rotate(-4deg) scaleY(1.08); filter: blur(13px); }
+}
+
+@media (max-width: 760px) {
+  .theme-switcher {
+    order: 4;
+    width: 100%;
+    justify-content: center;
+  }
+
+  .theme-option {
+    flex: 1;
+    padding-block: 9px;
+  }
+
+  .sun-orb {
+    top: 6%;
+    left: -8%;
+    width: 130px;
+  }
+
+  .wind-tree {
+    transform: scale(0.72);
+  }
+
+  .tree-b {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sun-orb,
+  .day-cloud,
+  .wind-leaf,
+  .wind-tree,
+  .aurora {
+    animation: none !important;
+  }
+}
+
+/* Premium atmosphere correction: keep day calm, reserve stars for night only. */
+.shooting-star,
+.aurora {
+  display: none;
+}
+
+body[data-sky-theme="day"] {
+  background:
+    radial-gradient(circle at 18% 7%, rgba(255, 221, 146, 0.24), transparent 26%),
+    radial-gradient(circle at 78% 0%, rgba(125, 211, 252, 0.18), transparent 30%),
+    linear-gradient(145deg, #f8fbff 0%, #eff8f5 52%, #fff7ea 100%);
+}
+
+body[data-sky-theme="day"] .sun-orb,
+body[data-sky-theme="day"] .wind-leaf,
+body[data-sky-theme="day"] .wind-tree,
+body[data-sky-theme="day"] .aurora,
+body[data-sky-theme="day"] .shooting-star,
+body[data-sky-theme="day"] .signal-dot {
+  display: none !important;
+}
+
+body[data-sky-theme="day"] .sky-motion::before,
+body[data-sky-theme="day"] .sky-motion::after {
+  opacity: 0 !important;
+}
+
+body[data-sky-theme="day"] .day-cloud {
+  display: block;
+  width: clamp(260px, 42vw, 620px);
+  height: clamp(48px, 7vw, 88px);
+  border-radius: 999px;
+  background:
+    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.16) 12%, rgba(255, 255, 255, 0.56) 48%, rgba(255, 255, 255, 0.14) 88%, transparent 100%);
+  filter: blur(13px);
+  opacity: 0.58;
+  animation: premiumCloudDrift 52s linear infinite;
+}
+
+body[data-sky-theme="day"] .cloud-a {
+  top: 14%;
+  left: -32%;
+}
+
+body[data-sky-theme="day"] .cloud-b {
+  top: 30%;
+  left: -48%;
+  width: clamp(220px, 36vw, 520px);
+  opacity: 0.38;
+  animation-delay: -24s;
+  animation-duration: 68s;
+}
+
+body[data-sky-theme="night"] .day-cloud,
+body[data-sky-theme="night"] .sun-orb,
+body[data-sky-theme="night"] .wind-leaf,
+body[data-sky-theme="night"] .wind-tree {
+  display: none !important;
+}
+
+body[data-sky-theme="night"] .aurora {
+  display: block;
+  opacity: 0.72;
+}
+
+body[data-sky-theme="night"] .shooting-star {
+  display: block;
+  opacity: 0;
+}
+
+body[data-sky-theme="night"] .sky-motion::before,
+body[data-sky-theme="night"] .sky-motion::after {
+  display: block;
+}
+
+@keyframes premiumCloudDrift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(150vw, -1.8vh, 0); }
+}
