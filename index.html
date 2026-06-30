@@ -47,6 +47,11 @@
         <button class="language-option" type="button" data-lang="en">EN</button>
         <button class="language-option" type="button" data-lang="zh">中文</button>
       </div>
+      <div class="theme-switcher" aria-label="Choose atmosphere">
+        <button class="theme-option is-active" type="button" data-sky-mode="auto">Auto</button>
+        <button class="theme-option" type="button" data-sky-mode="day">Day</button>
+        <button class="theme-option" type="button" data-sky-mode="night">Night</button>
+      </div>
     </header>
 
     <section class="hero" id="top">
@@ -803,5 +808,44 @@
   </main>
 
   <script src="app.js"></script>
+  <script>
+    (() => {
+      const key = "jamhaitee-sky-mode";
+      const modes = new Set(["auto", "day", "night"]);
+      const buttons = () => Array.from(document.querySelectorAll(".theme-option"));
+      const autoTheme = () => {
+        const hour = new Date().getHours();
+        return hour >= 18 || hour < 6 ? "night" : "day";
+      };
+      const resolveTheme = (mode) => mode === "day" || mode === "night" ? mode : autoTheme();
+      const getStartMode = () => {
+        const requested = new URLSearchParams(window.location.search).get("theme");
+        if (modes.has(requested)) return requested;
+        try {
+          const stored = localStorage.getItem(key);
+          if (modes.has(stored)) return stored;
+        } catch (_) {}
+        return document.body.dataset.skyMode || "auto";
+      };
+      const applyTheme = (mode = "auto") => {
+        const safeMode = modes.has(mode) ? mode : "auto";
+        const theme = resolveTheme(safeMode);
+        document.body.dataset.skyMode = safeMode;
+        document.body.dataset.skyTheme = theme;
+        document.documentElement.style.colorScheme = theme === "night" ? "dark" : "light";
+        buttons().forEach((button) => {
+          button.classList.toggle("is-active", button.dataset.skyMode === safeMode);
+        });
+        try {
+          localStorage.setItem(key, safeMode);
+        } catch (_) {}
+      };
+      buttons().forEach((button) => {
+        button.addEventListener("click", () => applyTheme(button.dataset.skyMode));
+      });
+      window.JamHaiTeeTheme = { apply: applyTheme };
+      applyTheme(getStartMode());
+    })();
+  </script>
 </body>
 </html>
