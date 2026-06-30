@@ -2747,3 +2747,476 @@ input:focus, select:focus, textarea:focus, button:focus, a:focus {
     padding: 9px 12px;
   }
 }
+
+/* Visual polish v3: app-like premium surface */
+:root {
+  --ink: #111827;
+  --muted: #64748b;
+  --line: rgba(15, 23, 42, 0.1);
+  --panel: rgba(255, 255, 255, 0.94);
+  --cream: #f8fafc;
+  --gold: #b9853b;
+  --gold-soft: #f2d799;
+  --navy: #0f1f33;
+  --green: #0f766e;
+  --blue: #2563eb;
+  --cyan: #0891b2;
+  --soft-shadow: 0 18px 55px rgba(15, 23, 42, 0.12);
+  --card-shadow: 0 14px 34px rgba(15, 23, 42, 0.08);
+}
+
+body {
+  background:
+    radial-gradient(circle at 18% 8%, rgba(37, 99, 235, 0.12), transparent 30%),
+    radial-gradient(circle at 86% 18%, rgba(15, 118, 110, 0.11), transparent 28%),
+    linear-gradient(135deg, #f8fafc 0%, #eef6f8 45%, #fbf7ef 100%);
+  color: var(--ink);
+}
+
+.app-shell {
+  max-width: 1160px;
+  padding-top: 26px;
+}
+
+.topbar {
+  border-radius: 26px;
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.1);
+  backdrop-filter: blur(18px) saturate(1.25);
+}
+
+.brand-mark {
+  background:
+    radial-gradient(circle at 34% 28%, #fff6d5 0 14%, transparent 15%),
+    linear-gradient(145deg, #0f1f33 0%, #1d4ed8 52%, #0f766e 100%);
+  box-shadow: 0 12px 26px rgba(15, 23, 42, 0.18);
+}
+
+.brand-name {
+  letter-spacing: 0;
+}
+
+.brand-kicker {
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+.top-actions a {
+  color: #1e293b;
+  border-radius: 999px;
+  padding: 9px 12px;
+}
+
+.top-actions a:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: #0f172a;
+}
+
+.top-actions .nav-button,
+.primary-link,
+.submit-button,
+.primary-button,
+.plan-button {
+  border: 0;
+  background: linear-gradient(135deg, #101827 0%, #1d4ed8 56%, #0f766e 100%);
+  color: #fff;
+  box-shadow: 0 16px 34px rgba(37, 99, 235, 0.22);
+}
+
+.top-actions .nav-button:hover,
+.primary-link:hover,
+.submit-button:hover,
+.primary-button:hover,
+.plan-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 20px 44px rgba(37, 99, 235, 0.28);
+}
+
+.language-switcher {
+  background: #f8fafc;
+  border-color: rgba(15, 23, 42, 0.09);
+}
+
+.language-option.is-active {
+  background: #0f172a;
+  color: #fff;
+  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.16);
+}
+
+.hero {
+  min-height: 0;
+  padding: 34px;
+  border-radius: 30px;
+  border-color: rgba(15, 23, 42, 0.08);
+  background:
+    linear-gradient(115deg, rgba(255, 255, 255, 0.96) 0%, rgba(248, 250, 252, 0.94) 48%, rgba(238, 246, 248, 0.92) 100%);
+  box-shadow: var(--soft-shadow);
+  overflow: hidden;
+}
+
+.hero::before {
+  width: 520px;
+  height: 520px;
+  right: -210px;
+  bottom: -240px;
+  opacity: 0.5;
+  border-color: rgba(37, 99, 235, 0.1);
+}
+
+.hero::after {
+  display: none;
+}
+
+.hero-inner {
+  position: relative;
+  z-index: 2;
+  align-self: center;
+}
+
+.hero h1 {
+  max-width: 560px;
+  font-size: clamp(38px, 5vw, 64px);
+  line-height: 1.03;
+  letter-spacing: 0;
+}
+
+.hero-copy {
+  max-width: 590px;
+  color: #334155;
+  font-size: clamp(15px, 1.45vw, 18px);
+  line-height: 1.75;
+}
+
+.eyebrow {
+  color: var(--gold);
+}
+
+.hero-summary {
+  gap: 10px;
+}
+
+.hero-summary span,
+.safe-pill,
+.choice-chip,
+.vehicle-preset-tab,
+.category-preset-tab,
+.vehicle-mini-picker button {
+  border-color: rgba(15, 23, 42, 0.09);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.hero-summary span {
+  color: #1e293b;
+}
+
+.hero-visual {
+  border-radius: 28px;
+  border-color: rgba(148, 163, 184, 0.22);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(56, 189, 248, 0.24), transparent 34%),
+    radial-gradient(circle at 82% 10%, rgba(250, 204, 21, 0.13), transparent 28%),
+    linear-gradient(150deg, #0b1220 0%, #142238 54%, #0f3f46 100%);
+  box-shadow: 0 24px 55px rgba(15, 23, 42, 0.28);
+}
+
+.orbital-kpi,
+.mission-grid div {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(12px);
+}
+
+.trust-strip {
+  margin-top: 16px;
+  border-radius: 24px;
+  border-color: rgba(15, 118, 110, 0.18);
+  background: rgba(255, 255, 255, 0.88);
+  box-shadow: 0 14px 34px rgba(15, 23, 42, 0.07);
+}
+
+.section-head {
+  margin-bottom: 18px;
+}
+
+.section-head h2,
+.panel-heading h2 {
+  letter-spacing: 0;
+}
+
+.evidence-card,
+.profile-card,
+.topic-card,
+.payment-card,
+.owner-card,
+.line-expert-card,
+.membership-card,
+.pricing-card,
+.panel,
+.process-section {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: var(--card-shadow);
+}
+
+.topic-card {
+  position: relative;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.topic-card::before {
+  content: "";
+  position: absolute;
+  inset: 14px auto auto 14px;
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--blue), var(--green));
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, 0.08);
+}
+
+.topic-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12);
+}
+
+.topic-card.is-active,
+.choice-chip.is-active,
+.vehicle-preset-tab.is-active,
+.category-preset-tab.is-active,
+.date-quick-panel .quick-date.is-active {
+  border-color: rgba(37, 99, 235, 0.38);
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(15, 118, 110, 0.1));
+  color: #0f172a;
+  box-shadow: 0 14px 30px rgba(37, 99, 235, 0.13);
+}
+
+.form-shell {
+  align-items: start;
+}
+
+.questionnaire.panel {
+  border-radius: 26px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97), rgba(248, 250, 252, 0.95));
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+}
+
+.panel-heading {
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.form-grid {
+  gap: 16px;
+}
+
+label span,
+.field-group > span,
+.smart-panel-head strong {
+  color: #0f172a;
+}
+
+input,
+select,
+textarea {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.98);
+  color: #111827;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: rgba(37, 99, 235, 0.45);
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.11);
+  outline: none;
+}
+
+.mobile-flow-note,
+.date-quick-panel,
+.vehicle-smart-panel,
+.category-smart-panel,
+.vehicle-picker-app,
+.category-picker-app,
+.selected-reminder-card,
+.reminder-basket,
+.result-card,
+.feedback-card {
+  border-color: rgba(37, 99, 235, 0.14);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(239, 246, 255, 0.72));
+  box-shadow: 0 16px 38px rgba(15, 23, 42, 0.08);
+}
+
+.vehicle-insight-card,
+.category-insight-card {
+  border-color: rgba(15, 118, 110, 0.18);
+  background:
+    linear-gradient(135deg, rgba(236, 253, 245, 0.94), rgba(240, 249, 255, 0.88));
+}
+
+.vehicle-preset-tabs,
+.category-preset-tabs,
+.vehicle-mini-picker .quick-mileage-grid,
+.date-quick-panel .quick-date-row {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(37, 99, 235, 0.38) transparent;
+}
+
+.vehicle-preset-tabs::-webkit-scrollbar,
+.category-preset-tabs::-webkit-scrollbar,
+.vehicle-mini-picker .quick-mileage-grid::-webkit-scrollbar,
+.date-quick-panel .quick-date-row::-webkit-scrollbar {
+  height: 6px;
+}
+
+.vehicle-preset-tabs::-webkit-scrollbar-thumb,
+.category-preset-tabs::-webkit-scrollbar-thumb,
+.vehicle-mini-picker .quick-mileage-grid::-webkit-scrollbar-thumb,
+.date-quick-panel .quick-date-row::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.35);
+}
+
+.reminder-basket h3,
+.selected-reminder-card h3,
+.result-card h3 {
+  color: #0f172a;
+}
+
+.queue-item {
+  border-color: rgba(15, 23, 42, 0.08);
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+
+.button-row {
+  gap: 10px;
+}
+
+.secondary-button,
+.ghost-button {
+  border-color: rgba(15, 23, 42, 0.12);
+  background: rgba(255, 255, 255, 0.88);
+  color: #0f172a;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+.secondary-button:hover,
+.ghost-button:hover {
+  border-color: rgba(37, 99, 235, 0.28);
+  background: rgba(239, 246, 255, 0.96);
+}
+
+@media (max-width: 900px) {
+  .app-shell {
+    padding-inline: 14px;
+  }
+
+  .topbar {
+    border-radius: 22px;
+    gap: 10px;
+  }
+
+  .hero {
+    padding: 24px;
+    border-radius: 26px;
+  }
+
+  .hero h1 {
+    font-size: clamp(34px, 10vw, 52px);
+  }
+
+  .hero-visual {
+    min-height: 380px;
+  }
+
+  .form-shell,
+  .profile-grid,
+  .evidence-grid {
+    gap: 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    background:
+      radial-gradient(circle at 20% 4%, rgba(37, 99, 235, 0.14), transparent 32%),
+      linear-gradient(180deg, #f8fafc 0%, #eef6f8 54%, #fffaf0 100%);
+  }
+
+  .app-shell {
+    padding-top: 12px;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 8px;
+    z-index: 20;
+    padding: 10px;
+    border-radius: 20px;
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+  }
+
+  .hero {
+    padding: 20px;
+    margin-top: 14px;
+  }
+
+  .hero-copy {
+    font-size: 15px;
+    line-height: 1.68;
+  }
+
+  .hero-summary {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scroll-snap-type: x proximity;
+  }
+
+  .hero-summary span {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .questionnaire.panel {
+    border-radius: 22px;
+    padding: 16px;
+  }
+
+  .date-quick-panel,
+  .vehicle-smart-panel,
+  .category-smart-panel,
+  .vehicle-picker-app,
+  .category-picker-app {
+    margin-inline: -2px;
+  }
+
+  .vehicle-mini-picker .quick-mileage-grid,
+  .date-quick-panel .quick-date-row {
+    display: flex;
+    overflow-x: auto;
+    gap: 8px;
+    padding-bottom: 8px;
+    scroll-snap-type: x proximity;
+  }
+
+  .vehicle-mini-picker .quick-mileage-grid .choice-chip,
+  .date-quick-panel .quick-date-row .quick-date {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
+  }
+
+  .topic-card::before {
+    inset: 12px auto auto 12px;
+  }
+}
