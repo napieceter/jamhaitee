@@ -42,6 +42,122 @@ body::before {
   animation: dataGridDrift 18s linear infinite;
 }
 
+.sky-motion {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.82;
+}
+
+.sky-motion::before,
+.sky-motion::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(1px);
+  opacity: 0.72;
+}
+
+.sky-motion::before {
+  top: 8%;
+  right: 12%;
+  width: 14px;
+  height: 14px;
+  background: #f7d784;
+  box-shadow:
+    0 0 0 7px rgba(247, 215, 132, 0.09),
+    0 0 42px rgba(247, 215, 132, 0.5);
+  animation: northStarPulse 4.8s ease-in-out infinite;
+}
+
+.sky-motion::after {
+  left: 9%;
+  top: 24%;
+  width: 8px;
+  height: 8px;
+  background: rgba(56, 189, 248, 0.85);
+  box-shadow:
+    22vw 13vh 0 -2px rgba(185, 142, 75, 0.5),
+    42vw -7vh 0 -3px rgba(56, 189, 248, 0.6),
+    66vw 26vh 0 -2px rgba(255, 255, 255, 0.65),
+    78vw 4vh 0 -3px rgba(29, 110, 89, 0.5);
+  animation: starFieldFloat 16s ease-in-out infinite;
+}
+
+.shooting-star {
+  position: absolute;
+  width: clamp(96px, 18vw, 220px);
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.88), rgba(247, 215, 132, 0.9));
+  box-shadow:
+    0 0 14px rgba(255, 255, 255, 0.58),
+    0 0 28px rgba(56, 189, 248, 0.2);
+  opacity: 0;
+  transform: rotate(-24deg);
+  animation: shootingStar 9.5s cubic-bezier(0.18, 0.72, 0.2, 1) infinite;
+}
+
+.shooting-star::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translateY(-50%);
+  box-shadow: 0 0 24px rgba(247, 215, 132, 0.9);
+}
+
+.star-a {
+  top: 4%;
+  left: 78%;
+  animation-delay: -1.5s;
+}
+
+.star-b {
+  top: 18%;
+  left: 112%;
+  width: clamp(72px, 13vw, 150px);
+  animation-delay: 2.4s;
+  animation-duration: 12s;
+  opacity: 0;
+}
+
+.star-c {
+  top: 56%;
+  left: 104%;
+  width: clamp(80px, 16vw, 180px);
+  animation-delay: 5.6s;
+  animation-duration: 11s;
+}
+
+.star-d {
+  top: 74%;
+  left: 84%;
+  width: clamp(58px, 10vw, 120px);
+  animation-delay: 7.2s;
+  animation-duration: 13s;
+}
+
+.signal-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(29, 110, 89, 0.72);
+  box-shadow: 0 0 22px rgba(29, 110, 89, 0.38);
+  animation: signalDrift 12s ease-in-out infinite;
+}
+
+.dot-a { left: 18%; top: 18%; animation-delay: -2s; }
+.dot-b { left: 72%; top: 42%; animation-delay: -5s; }
+.dot-c { left: 36%; top: 76%; animation-delay: -8s; }
+
 .app-shell {
   position: relative;
   z-index: 1;
@@ -227,6 +343,77 @@ body::before {
   z-index: 0;
   opacity: 0.5;
   pointer-events: none;
+}
+
+.hero-light-trails {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.hero-light-trails::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 12% 28%, rgba(56, 189, 248, 0.14), transparent 22%),
+    radial-gradient(circle at 78% 24%, rgba(247, 215, 132, 0.18), transparent 24%);
+  opacity: 0.8;
+}
+
+.hero-trail {
+  position: absolute;
+  width: clamp(120px, 20vw, 260px);
+  height: 3px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(14, 116, 144, 0.58), rgba(255, 255, 255, 0.95), rgba(247, 215, 132, 0.92));
+  box-shadow:
+    0 0 12px rgba(14, 116, 144, 0.28),
+    0 0 26px rgba(56, 189, 248, 0.24),
+    0 0 42px rgba(247, 215, 132, 0.34);
+  opacity: 0;
+  transform: rotate(-19deg);
+  animation: heroTrailFall 8.8s cubic-bezier(0.16, 0.74, 0.23, 1) infinite;
+}
+
+.hero-trail::after {
+  content: "";
+  position: absolute;
+  right: -3px;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #fff9df;
+  transform: translateY(-50%);
+  box-shadow:
+    0 0 14px rgba(255, 255, 255, 0.92),
+    0 0 30px rgba(247, 215, 132, 0.86);
+}
+
+.trail-a {
+  left: 74%;
+  top: 7%;
+  animation-delay: -1s;
+}
+
+.trail-b {
+  left: 92%;
+  top: 36%;
+  width: clamp(84px, 14vw, 170px);
+  animation-delay: 2.5s;
+  animation-duration: 10.4s;
+}
+
+.trail-c {
+  left: 64%;
+  top: 64%;
+  width: clamp(92px, 16vw, 190px);
+  animation-delay: 5.5s;
+  animation-duration: 11.6s;
 }
 
 .hero-inner {
@@ -2158,6 +2345,75 @@ input:focus, select:focus, textarea:focus, button:focus, a:focus {
   to { background-position: 42px 42px, 42px 42px; }
 }
 
+@keyframes northStarPulse {
+  0%, 100% {
+    opacity: 0.62;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes starFieldFloat {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(12px, -18px, 0); }
+}
+
+@keyframes shootingStar {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -10vh, 0) rotate(-24deg) scaleX(0.62);
+  }
+  8% {
+    opacity: 0.92;
+  }
+  42% {
+    opacity: 0.72;
+  }
+  58% {
+    opacity: 0;
+    transform: translate3d(-112vw, 66vh, 0) rotate(-24deg) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-112vw, 66vh, 0) rotate(-24deg) scaleX(1);
+  }
+}
+
+@keyframes heroTrailFall {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -16px, 0) rotate(-19deg) scaleX(0.7);
+  }
+  10% {
+    opacity: 0.92;
+  }
+  42% {
+    opacity: 0.68;
+  }
+  62% {
+    opacity: 0;
+    transform: translate3d(-84vw, 42vh, 0) rotate(-19deg) scaleX(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate3d(-84vw, 42vh, 0) rotate(-19deg) scaleX(1);
+  }
+}
+
+@keyframes signalDrift {
+  0%, 100% {
+    opacity: 0.28;
+    transform: translate3d(0, 0, 0) scale(0.9);
+  }
+  50% {
+    opacity: 0.72;
+    transform: translate3d(18px, -16px, 0) scale(1.14);
+  }
+}
+
 @keyframes orbitSpin {
   to { transform: rotate(360deg); }
 }
@@ -2197,9 +2453,21 @@ input:focus, select:focus, textarea:focus, button:focus, a:focus {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+
+  .sky-motion {
+    display: none;
+  }
+
+  .hero-light-trails {
+    display: none;
+  }
 }
 
 @media (max-width: 980px) {
+  .sky-motion {
+    opacity: 0.58;
+  }
+
   .hero {
     grid-template-columns: 1fr;
   }
@@ -2230,6 +2498,32 @@ input:focus, select:focus, textarea:focus, button:focus, a:focus {
 
 @media (max-width: 640px) {
   body { font-size: 14px; }
+  .hero-light-trails {
+    opacity: 0.56;
+  }
+  .trail-b,
+  .trail-c {
+    display: none;
+  }
+  .hero-trail {
+    width: clamp(78px, 34vw, 136px);
+    animation-duration: 11s;
+  }
+  .sky-motion::before {
+    top: 5%;
+    right: 10%;
+    width: 10px;
+    height: 10px;
+  }
+  .shooting-star {
+    width: clamp(62px, 30vw, 116px);
+    animation-duration: 12s;
+  }
+  .star-c,
+  .star-d,
+  .signal-dot {
+    display: none;
+  }
   .app-shell { width: min(100% - 20px, 1180px); padding-top: 10px; }
   .topbar {
     position: static;
