@@ -3653,3 +3653,97 @@ const channelInput = document.querySelector("#channel");
 if (channelInput) channelInput.selectedIndex = 1;
 applySkyMode(getRequestedSkyMode() || getSafeStorage(skyModeKey, "auto"));
 applyLanguage(currentLang);
+
+(() => {
+  const interactiveChildren = "a[href], button, input, select, textarea, label, summary";
+
+  function animateTap(element) {
+    if (!element) return;
+    element.classList.remove("tap-pulse");
+    void element.offsetWidth;
+    element.classList.add("tap-pulse");
+  }
+
+  function resolveScrollTarget(targetSelector) {
+    return typeof targetSelector === "function" ? targetSelector() : targetSelector;
+  }
+
+  function makeScrollTrigger(selector, targetSelector, toastKey) {
+    document.querySelectorAll(selector).forEach((element) => {
+      if (element.dataset.linScrollReady === "1") return;
+      element.dataset.linScrollReady = "1";
+      element.classList.add("is-clickable");
+
+      const tag = element.tagName.toLowerCase();
+      if (tag !== "a" && tag !== "button") {
+        element.setAttribute("role", "button");
+        element.setAttribute("tabindex", "0");
+      }
+
+      const activate = (event) => {
+        if (event?.linScrollHandled) return;
+        const nestedControl = event?.target?.closest(interactiveChildren);
+        if (nestedControl && nestedControl !== element && element.contains(nestedControl)) return;
+        if (event) {
+          event.linScrollHandled = true;
+          event.preventDefault();
+        }
+        const target = resolveScrollTarget(targetSelector);
+        if (!target || !document.querySelector(target)) return;
+        animateTap(element);
+        goToSection(target, toastKey);
+      };
+
+      element.addEventListener("click", activate);
+      element.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        activate(event);
+      });
+    });
+  }
+
+  [
+    [".hero-summary span:nth-child(1)", "#profile", "support"],
+    [".hero-summary span:nth-child(2)", "#line-expert", "expert"],
+    [".hero-summary span:nth-child(3)", "#owner", "status"],
+    [".hero-summary span:nth-child(4)", "#membership", "support"],
+    [".trust-strip", "#membership", "support"],
+    [".safe-pill", "#owner", "status"],
+    [".hero-visual .mission-grid > div:nth-child(1)", "#evidence", "support"],
+    [".hero-visual .mission-grid > div:nth-child(2)", "#topics", "create"],
+    [".hero-visual .mission-grid > div:nth-child(3)", "#pricing", "plans"],
+    ["#evidence .evidence-card:nth-child(1)", "#topics", "create"],
+    ["#evidence .evidence-card:nth-child(2)", "#topics", "create"],
+    ["#evidence .evidence-card:nth-child(3)", "#pricing", "plans"],
+    ["#evidence .evidence-card:nth-child(4)", "#line-expert", "expert"],
+    [".profile-grid .profile-card:nth-child(1)", "#topics", "create"],
+    [".profile-grid .profile-card:nth-child(2)", "#membership", "support"],
+    [".profile-grid .profile-card:nth-child(3)", "#pricing", "plans"],
+    [".process-grid > div:nth-child(1)", "#membership", "support"],
+    [".process-grid > div:nth-child(2)", "#topics", "create"],
+    [".process-grid > div:nth-child(3)", () => formShell && !formShell.classList.contains("is-hidden") ? "#formShell" : "#topics", "create"],
+    [".process-grid > div:nth-child(4)", () => resultPanel && !resultPanel.classList.contains("is-hidden") ? "#resultPanel" : "#topics", "reschedule"]
+  ].forEach(([selector, target, toastKey]) => makeScrollTrigger(selector, target, toastKey));
+
+  document.querySelectorAll('a[href^="#"]').forEach((link) => {
+    if (link.dataset.linAnchorReady === "1") return;
+    link.dataset.linAnchorReady = "1";
+    link.classList.add("is-clickable");
+    link.addEventListener("click", (event) => {
+      if (event.linScrollHandled) return;
+      const target = link.getAttribute("href");
+      if (!target || target === "#" || !document.querySelector(target)) return;
+      event.linScrollHandled = true;
+      event.preventDefault();
+      animateTap(link);
+      const toastKey = link.classList.contains("nav-button") ? "create" : "support";
+      goToSection(target, toastKey);
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    const target = event.target.closest("button, .choice-chip, .category-preset-tab, .vehicle-preset-tab, .payment-card, .topic-card, .plan-button, .primary-link");
+    if (!target) return;
+    animateTap(target);
+  });
+})();
